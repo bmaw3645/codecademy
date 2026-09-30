@@ -1,6 +1,11 @@
 # Neon Descent
 
-A first-person roguelite shooter with an arcade feel and a PlayStation 2–era look. It's a single HTML file with no build step.
+A first-person roguelite shooter with an arcade feel. It's a single HTML file with no build step.
+
+It has two looks, switchable any time under **Settings → Graphics**:
+
+- **Pong (1972)**, the default. A black screen, glowing white vector lines, square "Pong ball" shots, pixel fonts, and every enemy drawn as an animated stick figure.
+- **PS2 (2002)**. Textured neon corridors, low-poly robots, bloom and motion trails.
 
 ## Play
 
@@ -33,7 +38,7 @@ It also plays on phones and tablets. Tap **Start run** with a finger and the gam
 | Weapon button | Tap to cycle weapons |
 | **II** | Pause |
 
-On touch, aim assist nudges your sights toward the nearest enemy, and auto-fire shoots when the crosshair turns pink. You can turn either off in Settings.
+On touch, aim assist nudges your sights toward the nearest enemy, and auto-fire shoots when your sights lock on. You can turn either off in Settings.
 
 ## The loop
 
@@ -53,7 +58,15 @@ M-9 Blaster (infinite ammo), Scattergun, Pulse Rifle, Hammer RL (you can rocket-
 
 Skitter (melee lunger), Tick (runs at you and explodes, and chain-reacts), Sentry (burst fire), Wisp (flying spread shot), Juggernaut (floor slam shockwave: jump it), Lancer (sniper: the laser locks white just before it fires) and The Warden (boss with two phases). Elites glow gold.
 
-## How the PS2 look works
+## How the looks work
+
+Pong mode:
+
+- Levels are drawn as black occluding shapes with white edges traced from the tile grid, plus a dot-grid floor and a dashed Pong "net" down each room.
+- Enemies are flat stick figures that always turn to face you, with walk, flap, scuttle and slam animations. They shatter into white sticks when killed. The Warden is a vector-outline machine with Pong paddles for armour plates.
+- The final pass converts everything to monochrome phosphor with 6-level dithering, a soft CRT glow and heavier scanlines.
+
+PS2 mode:
 
 - The scene renders to a low-resolution buffer (360p by default) and is upscaled with sharp or soft filtering.
 - World lighting is baked into vertex colours (Gouraud style, with 2× overbright modulation and grid-traced shadows). Up to 12 dynamic point lights for muzzle flashes, projectiles and explosions are added in the shader.

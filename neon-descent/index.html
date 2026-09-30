@@ -6,7 +6,7 @@
 <title>Neon Descent</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:ital,wght@0,500;0,700;1,600;1,700&family=Russo+One&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:ital,wght@0,500;0,700;1,600;1,700&family=Press+Start+2P&family=Russo+One&family=VT323&display=swap">
 <style>
 /* Layout: full-bleed low-res framebuffer; HUD pinned to the four corners like a cabinet bezel; menus are skewed chrome slabs over the attract-mode flyby */
 :root{
@@ -287,6 +287,131 @@ body.touch #hud #bossbar .bar{height:8px}
 body.touch #toast{bottom:auto;top:31%}
 @media (orientation:portrait){body.touch #bossbar{top:180px;width:72vw}}
 
+/* ───────── Pong style (1972): monochrome, square, pixel type ───────── */
+body:not(.pong) .only-pong,body.pong .only-ps2{display:none!important}
+body.pong{
+  --void:#000;--ink:#f2f2f2;--mute:#8f8f8f;--hot:#fff;--ice:#fff;--gold:#fff;--toxic:#fff;--steel:#cfcfcf;
+  --slab:rgba(0,0,0,.9);--edge:rgba(255,255,255,.6);
+  --f-display:"Press Start 2P","Courier New",monospace;
+  --f-body:"VT323","Courier New",monospace;
+  font-size:20px;
+}
+body.pong *{font-style:normal!important}
+body.pong #scan{opacity:.75}
+body.pong .screen{background:rgba(0,0,0,.74)}
+body.pong #scr-title{background:linear-gradient(90deg,rgba(0,0,0,.93) 0%,rgba(0,0,0,.72) 40%,rgba(0,0,0,.08) 75%)}
+body.pong .logo,body.pong .h1,body.pong #ann .big{background:none;-webkit-background-clip:border-box;background-clip:border-box;color:var(--ink);filter:none;transform:none;text-shadow:4px 4px 0 #3c3c3c;letter-spacing:0}
+body.pong .logo{font-size:clamp(26px,min(6.2vw,11vh),76px);line-height:1.25}
+body.pong .h1{font-size:clamp(18px,3.4vw,36px);line-height:1.3}
+body.pong #ann .big{font-size:clamp(16px,3.2vw,36px);line-height:1.3}
+body.pong #ann .sub{font-family:var(--f-body);font-size:22px;letter-spacing:.2em}
+body.pong .kicker{font-size:20px;letter-spacing:.24em}
+body.pong .tag{font-size:24px;line-height:1.15;color:var(--steel)}
+body.pong .btn{transform:none;border:2px solid var(--ink);background:#000;font-size:13px;letter-spacing:.04em;padding:13px 18px;line-height:1.4;transition:none}
+body.pong .btn > span,body.pong .btn > em{transform:none}
+body.pong .btn em{font-family:var(--f-body);font-size:20px;color:var(--ink)}
+body.pong .btn:hover,body.pong .btn:focus-visible{background:var(--ink);color:#000;transform:none;box-shadow:none}
+body.pong .btn:hover em,body.pong .btn:focus-visible em,body.pong .btn.primary em{color:#000}
+body.pong .btn.primary{background:var(--ink);color:#000}
+body.pong .btn.primary:hover,body.pong .btn.primary:focus-visible{background:#000;color:var(--ink);outline:2px dashed var(--ink);outline-offset:3px}
+body.pong .btn.primary:hover em,body.pong .btn.primary:focus-visible em{color:var(--ink)}
+body.pong .blink{font-family:var(--f-body);font-size:20px;letter-spacing:.14em;color:var(--mute)}
+body.pong .touch-note{font-family:var(--f-body);font-size:22px;line-height:1.1;color:var(--ink)}
+body.pong .hiscore h2{font-size:12px;color:var(--ink);line-height:1.5}
+body.pong .hiscore li{font-size:20px;border-left:2px solid var(--ink)}
+body.pong #hud{text-shadow:none}
+body.pong #hud-tl,body.pong.touch #hud-tl{left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;text-align:center}
+body.pong #score{font-size:30px;letter-spacing:.06em;line-height:1.2}
+body.pong #scorepop{font-size:12px}
+body.pong #combo{justify-content:center}
+body.pong #mult{font-size:16px;min-width:0}
+body.pong #combobar{transform:none;border:1px solid var(--ink);background:#000;height:8px}
+body.pong #combobar i{background:var(--ink)}
+body.pong #combocount{font-family:var(--f-body);font-size:18px;letter-spacing:.14em}
+body.pong #hpnum{font-size:30px}
+body.pong #hpnum small{font-family:var(--f-body);font-size:20px}
+body.pong .bar{transform:none;border:2px solid var(--ink);background:#000}
+body.pong .bar i{background:var(--ink)!important}
+body.pong #hpbar b{background:#555}
+body.pong #hpbar.low i{animation:blinkbar .5s steps(2,start) infinite}
+@keyframes blinkbar{to{opacity:.3}}
+body.pong .pip{transform:none;border:1px solid var(--ink);background:#000}
+body.pong .pip i{background:var(--ink)}
+body.pong .pip.full i{box-shadow:none}
+body.pong #dashrow{font-size:16px}
+body.pong #wname{font-family:var(--f-body);font-size:20px}
+body.pong #ammo{font-size:34px;line-height:1.2}
+body.pong .slot{transform:none;font-family:var(--f-display);font-size:9px;padding:4px 6px;border:1px solid var(--ink)}
+body.pong .slot.cur{background:var(--ink);color:#000}
+body.pong #minimap{border-radius:0;border:2px solid var(--ink);box-shadow:none;background:#000}
+body.pong #floorlbl{font-size:10px;letter-spacing:.04em;line-height:1.5}
+body.pong #sectors{font-family:var(--f-body);font-size:18px}
+body.pong #xh i{background:var(--ink);box-shadow:none}
+body.pong #xh b,body.pong #xh.lock i{background:var(--ink)}
+body.pong #xh.lock b{width:6px;height:6px;left:-3px;top:-3px}
+body.pong #hm i{box-shadow:none}
+body.pong #hm.kill i{height:4px}
+body.pong .dir i{background:var(--ink)}
+body.pong .num{font-size:11px}
+body.pong .num.crit{background:var(--ink);color:#000;padding:2px 4px;font-size:12px}
+body.pong .num.heal{color:var(--ink)}
+body.pong #callout{font-size:14px;line-height:1.6}
+body.pong #callout small{font-size:18px}
+body.pong #bossbar{top:118px}
+body.pong #bossbar .nm{font-size:11px;letter-spacing:.1em;color:var(--ink);line-height:1.5}
+body.pong #toast{font-size:22px}
+body.pong #lockhint{font-size:18px}
+body.pong .stat{border:2px solid var(--ink);background:#000}
+body.pong .stat b{font-size:16px;line-height:1.7}
+body.pong .stat span{font-size:16px;letter-spacing:.12em}
+body.pong .card{border:2px solid var(--ink);background:#000;transition:none}
+body.pong .card.r1{border:4px double var(--ink)}
+body.pong .card.r2{border:7px double var(--ink)}
+body.pong .card.wp{border:3px dashed var(--ink)}
+body.pong .card .ico{font-size:22px;filter:none;line-height:1.4}
+body.pong .card .nm{font-size:13px;line-height:1.5}
+body.pong .card .ds{font-size:21px;line-height:1.1}
+body.pong .card .rar,body.pong .card .lv{font-size:17px;letter-spacing:.14em}
+body.pong .card .key{font-family:var(--f-display);font-size:9px;padding:3px 5px}
+body.pong .card:hover,body.pong .card:focus-visible{background:var(--ink);box-shadow:none;transform:none}
+body.pong .card:hover *,body.pong .card:focus-visible *{color:#000!important;border-color:#000!important}
+body.pong .chip{font-size:17px;border:1px solid var(--ink)}
+body.pong .item{border:2px solid var(--ink);background:#000}
+body.pong .item h3{font-size:12px;line-height:1.5}
+body.pong .item p{font-size:20px}
+body.pong .item .pips i{transform:none;border:1px solid var(--ink);background:#000}
+body.pong .item .pips i.on{background:var(--ink)}
+body.pong .wallet{font-size:16px}
+body.pong .form{border:2px solid var(--ink);background:#000}
+body.pong .form label{font-size:18px;letter-spacing:.1em}
+body.pong .form output{font-family:var(--f-body);font-size:21px}
+body.pong .form select{border:2px solid var(--ink);background:#000;border-radius:0;font-size:19px}
+body.pong .form input{accent-color:#dcdcdc}
+body.pong .panel{border:2px solid var(--ink);background:#000}
+body.pong .panel h2{font-size:12px;line-height:1.5;color:var(--ink)}
+body.pong .keys,body.pong .foes{font-size:20px}
+body.pong .foes b{font-size:10px;margin-right:8px}
+body.pong kbd{font-family:var(--f-body);font-size:18px;border:1px solid var(--ink);border-bottom-width:3px;background:#000}
+body.pong .newbest{font-size:14px;line-height:1.5}
+body.pong .tbtn{border-radius:0;border:2px solid var(--ink);background:rgba(0,0,0,.6);font-size:9px;letter-spacing:0}
+body.pong .tbtn.on{background:var(--ink);color:#000}
+body.pong #t-fire{border:3px solid var(--ink);font-size:11px;background:rgba(0,0,0,.6)}
+body.pong #t-dash{background:conic-gradient(rgba(255,255,255,.35) calc(var(--f,1) * 360deg),rgba(0,0,0,.6) 0)}
+body.pong #t-dash small,body.pong #t-swap b{font-family:var(--f-body);font-size:16px;color:var(--ink)}
+body.pong #t-swap span{font-size:13px;line-height:1.4}
+body.pong #t-stick{border-color:rgba(255,255,255,.4);background:none}
+body.pong #t-knob{background:rgba(255,255,255,.25);border-color:var(--ink);box-shadow:none;border-radius:0}
+body.pong.touch #hud-bl{top:max(10px,env(safe-area-inset-top,0px))}
+body.pong.touch #score{font-size:20px}
+body.pong.touch #hpnum{font-size:18px}
+body.pong.touch #bossbar{top:96px}
+body.pong.touch #sectors{font-size:15px;max-width:150px}
+body.pong.touch #floorlbl{font-size:8px}
+body.pong.touch #combocount{font-size:15px}
+body.pong.touch #mult{font-size:12px}
+body.pong.touch #hpnum small{font-size:16px}
+@media (max-height:520px){body.pong .touch-note{font-size:19px}body.pong .h1{font-size:18px}body.pong .btn{font-size:11px;padding:10px 14px}body.pong .card .nm{font-size:11px}body.pong .card .ds{font-size:18px}}
+
 @media (prefers-reduced-motion:reduce){#ann.on,#callout.on,#toast.on,#scorepop.on,.blink{animation-duration:.01s}.btn,.card{transition:none}}
 </style>
 </head>
@@ -341,7 +466,7 @@ body.touch #toast{bottom:auto;top:31%}
 <section class="screen" id="scr-title">
   <div class="title-wrap">
     <div class="title-head">
-    <div class="kicker">Arcade roguelite · 128-bit era</div>
+    <div class="kicker"><span class="only-pong">Arcade roguelite · 1-bit edition</span><span class="only-ps2">Arcade roguelite · 128-bit era</span></div>
     <h1 class="logo">Neon<br>Descent</h1>
     <p class="tag">Drop down the shaft, clear every sector, pick an augment, fall again. Every fifth floor, something big is waiting.</p>
     </div>
@@ -352,7 +477,7 @@ body.touch #toast{bottom:auto;top:31%}
       <button class="btn" id="b-settings"><span>Settings</span></button>
       <button class="btn" id="b-help"><span>How to play</span></button>
     </nav>
-    <p class="touch-note only-touch">Left thumb moves, right thumb aims. Auto-fire shoots when your sights turn pink. Sideways works best.</p>
+    <p class="touch-note only-touch">Left thumb moves, right thumb aims. Auto-fire shoots when your sights lock on. Sideways works best.</p>
     <div class="blink only-desk">WASD · MOUSE · SPACE · SHIFT</div>
     </div>
   </div>
@@ -417,6 +542,8 @@ body.touch #toast{bottom:auto;top:31%}
     <div class="kicker">Saved on this device</div>
     <h2 class="h1 ice">Settings</h2>
     <div class="form">
+      <label for="o-style">Graphics</label>
+      <select id="o-style" class="full"><option value="pong">Pong · 1972 vector lines</option><option value="ps2">PS2 · 2002 neon</option></select>
       <label for="o-sens">Look sensitivity</label><input type="range" id="o-sens" min="0.2" max="3" step="0.05"><output id="v-sens"></output>
       <label for="o-fov">Field of view</label><input type="range" id="o-fov" min="70" max="120" step="1"><output id="v-fov"></output>
       <label for="o-sfx">Effects volume</label><input type="range" id="o-sfx" min="0" max="1" step="0.05"><output id="v-sfx"></output>
@@ -449,7 +576,7 @@ body.touch #toast{bottom:auto;top:31%}
           <span><kbd>FIRE</kbd></span><span>Hold to shoot · slide it to aim while firing</span>
           <span><kbd>JUMP</kbd> <kbd>DASH</kbd></span><span>Hop crates and shockwaves · dash through danger</span>
           <span><kbd>WEAPON</kbd></span><span>Tap to cycle weapons</span>
-          <span><kbd>AUTO</kbd></span><span>Fires when your sights turn pink. Toggle it in Settings</span>
+          <span><kbd>AUTO</kbd></span><span>Fires when your sights lock on. Toggle it in Settings</span>
         </div>
         <div class="keys only-desk">
           <span><kbd>W</kbd> <kbd>A</kbd> <kbd>S</kbd> <kbd>D</kbd></span><span>Move</span>
@@ -559,7 +686,7 @@ const store = {
   set(k, v) { try { localStorage.setItem('neondescent.' + k, JSON.stringify(v)); } catch (e) { /* storage blocked */ } },
 };
 const settings = Object.assign(
-  { sens: 1, fov: 100, sfx: 0.8, music: 0.5, res: 360, sharp: true, trails: 1, scan: true, shake: !reduceMotion, invertY: false, autoFire: true, aimAssist: true },
+  { sens: 1, fov: 100, sfx: 0.8, music: 0.5, res: 360, sharp: true, trails: 1, scan: true, shake: !reduceMotion, invertY: false, autoFire: true, aimAssist: true, style: 'pong' },
   store.get('settings', {})
 );
 const meta = Object.assign({ scrap: 0, up: {}, best: [], runs: 0, bestFloor: 0 }, store.get('meta', {}));
@@ -904,7 +1031,7 @@ void main(){
 }`, { tScene: { value: null }, tBloom: { value: null }, tPrev: { value: null }, bloom: { value: 1.15 }, ghost: { value: 0.35 } });
 
 const post = { hurt: 0, lowhp: 0, flash: 0, flashCol: new THREE.Color(1, 1, 1), aberr: 0.004, sat: 1.18, fade: 1 };
-const matFinal = fsMat(`uniform sampler2D tSrc; uniform float time; uniform float hurt; uniform float lowhp; uniform float flash; uniform vec3 flashCol; uniform float aberr; uniform float sat; uniform float fade;
+const matFinal = fsMat(`uniform sampler2D tSrc; uniform float time; uniform float hurt; uniform float lowhp; uniform float flash; uniform vec3 flashCol; uniform float aberr; uniform float sat; uniform float fade; uniform float mono;
 varying vec2 vUv;
 float bayer2(vec2 a){ a = floor(a); return fract(a.x * 0.5 + a.y * a.y * 0.75); }
 float bayer4(vec2 a){ return bayer2(0.5 * a) * 0.25 + bayer2(a); }
@@ -916,16 +1043,18 @@ void main(){
   float l = dot(c, vec3(0.299, 0.587, 0.114));
   c = mix(vec3(l), c, sat);
   c *= 1.0 - r2 * 0.9;
-  c = mix(c, vec3(0.95, 0.03, 0.1), clamp(hurt * (0.2 + r2 * 2.8), 0.0, 0.8));
-  c = mix(c, vec3(0.5, 0.0, 0.06), clamp(lowhp * r2 * 2.4 * (0.65 + 0.35 * sin(time * 7.0)), 0.0, 0.7));
+  if (mono > 0.5) c = vec3(dot(c, vec3(0.299, 0.587, 0.114))) * vec3(0.95, 1.0, 0.97);
+  c = mix(c, mono > 0.5 ? vec3(1.0) : vec3(0.95, 0.03, 0.1), clamp(hurt * (0.2 + r2 * 2.8), 0.0, 0.8));
+  c = mix(c, mono > 0.5 ? vec3(0.0) : vec3(0.5, 0.0, 0.06), clamp(lowhp * r2 * 2.4 * (0.65 + 0.35 * sin(time * 7.0)), 0.0, 0.7));
   c = mix(c, flashCol, clamp(flash, 0.0, 1.0));
   c *= fade;
   float b = bayer4(gl_FragCoord.xy) - 0.5;
-  c = floor(clamp(c, 0.0, 1.0) * 31.0 + 0.5 + b * 0.85) / 31.0;
+  float lv = mono > 0.5 ? 6.0 : 31.0;
+  c = floor(clamp(c, 0.0, 1.0) * lv + 0.5 + b * 0.85) / lv;
   gl_FragColor = vec4(c, 1.0);
 }`, {
   tSrc: { value: null }, time: { value: 0 }, hurt: { value: 0 }, lowhp: { value: 0 }, flash: { value: 0 },
-  flashCol: { value: new THREE.Color() }, aberr: { value: 0 }, sat: { value: 1.18 }, fade: { value: 1 },
+  flashCol: { value: new THREE.Color() }, aberr: { value: 0 }, sat: { value: 1.18 }, fade: { value: 1 }, mono: { value: 0 },
 });
 
 function fsPass(mat, target) {
@@ -986,11 +1115,14 @@ function renderFrame(showVM, time) {
   const cu = matComp.uniforms;
   cu.tScene.value = rtScene.texture; cu.tBloom.value = rtB1.texture; cu.tPrev.value = prev.texture;
   cu.ghost.value = [0, 0.4, 0.62][settings.trails] ?? 0.4;
+  const pong = isPong();
+  cu.bloom.value = pong ? 0.55 : 1.15;
+  matBright.uniforms.thr.value = pong ? 0.6 : 0.75;
   fsPass(matComp, cur);
   const fu = matFinal.uniforms;
   fu.tSrc.value = cur.texture; fu.time.value = time;
   fu.hurt.value = post.hurt; fu.lowhp.value = post.lowhp; fu.flash.value = post.flash; fu.flashCol.value.copy(post.flashCol);
-  fu.aberr.value = post.aberr; fu.sat.value = post.sat; fu.fade.value = post.fade;
+  fu.aberr.value = post.aberr * (pong ? 0.3 : 1); fu.sat.value = post.sat; fu.fade.value = post.fade; fu.mono.value = pong ? 1 : 0;
   fsPass(matFinal, null);
   accIdx ^= 1;
 }
@@ -1302,7 +1434,7 @@ const particlesAdd = new Particles(2400, true);
 const particlesAlpha = new Particles(600, false);
 const _pc = new THREE.Color();
 function sparks(pos, color, n, speed = 8, life = 0.4, size = 0.22, grav = 14, dir = null) {
-  _pc.set(color);
+  _pc.set(isPong() ? 0xffffff : color);
   for (let i = 0; i < n; i++) {
     let vx = rand(-1, 1), vy = rand(-1, 1), vz = rand(-1, 1);
     if (dir) { vx = vx * 0.6 + dir.x; vy = vy * 0.6 + dir.y; vz = vz * 0.6 + dir.z; }
@@ -1311,6 +1443,7 @@ function sparks(pos, color, n, speed = 8, life = 0.4, size = 0.22, grav = 14, di
   }
 }
 function smoke(pos, n, color = 0x2a2530, size = 1.4, life = 1.2, spread = 0.6) {
+  if (isPong()) return;
   _pc.set(color);
   for (let i = 0; i < n; i++) {
     particlesAlpha.spawn(pos.x + rand(-spread, spread), pos.y + rand(-spread, spread), pos.z + rand(-spread, spread),
@@ -1320,9 +1453,9 @@ function smoke(pos, n, color = 0x2a2530, size = 1.4, life = 1.2, spread = 0.6) {
 
 // ───────────── instanced gibs ─────────────
 class Gibs {
-  constructor(max, mat, size) {
+  constructor(max, mat, size, shape = null) {
     this.max = max; this.n = 0;
-    this.mesh = new THREE.InstancedMesh(new THREE.BoxGeometry(size, size, size), mat, max);
+    this.mesh = new THREE.InstancedMesh(shape || new THREE.BoxGeometry(size, size, size), mat, max);
     this.mesh.frustumCulled = false;
     this.mesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
     this.p = new Float32Array(max * 3); this.v = new Float32Array(max * 3); this.r = new Float32Array(max * 3); this.w = new Float32Array(max * 3);
@@ -1380,7 +1513,7 @@ const beamGeo = new THREE.PlaneGeometry(1, 1);
 const _bm = new THREE.Matrix4(), _bd = new THREE.Vector3(), _bs = new THREE.Vector3(), _bz = new THREE.Vector3(), _bc = new THREE.Vector3();
 function makeBeam(color, opacity = 1) {
   const m = new THREE.Mesh(beamGeo, new THREE.MeshBasicMaterial({
-    map: TEX.beam, color, transparent: true, opacity, blending: THREE.AdditiveBlending, depthWrite: false, side: THREE.DoubleSide, fog: false,
+    map: isPong() ? null : TEX.beam, color, transparent: true, opacity, blending: THREE.AdditiveBlending, depthWrite: false, side: THREE.DoubleSide, fog: false,
   }));
   m.frustumCulled = false; m.renderOrder = 6;
   return m;
@@ -1406,7 +1539,7 @@ const tracers = [];
 function tracer(a, b, color, width = 0.06, life = 0.09) {
   let t = tracers.find((x) => x.life <= 0);
   if (!t) { t = { mesh: makeBeam(color), life: 0, max: 1, w: 0 }; scene.add(t.mesh); tracers.push(t); }
-  t.mesh.material.color.set(color).multiplyScalar(2.2);
+  if (isPong()) t.mesh.material.color.setRGB(1, 1, 1); else t.mesh.material.color.set(color).multiplyScalar(2.2);
   t.a = a.clone(); t.b = b.clone(); t.life = t.max = life; t.w = width;
   t.mesh.visible = true;
   setBeam(t.mesh, t.a, t.b, width);
@@ -1448,6 +1581,7 @@ const G_BAND = new THREE.CylinderGeometry(1, 1, 1, 40, 1, true).translate(0, 0.5
 const G_BEAMCYL = new THREE.CylinderGeometry(1, 1, 1, 12, 1, true).translate(0, 0.5, 0);
 
 function explosionFx(pos, radius, color = 0xff7a2a) {
+  if (isPong()) { pongExplosion(pos, radius); addLight(pos, color, 3.2, radius * 4, 0.4); return; }
   const c = new THREE.Color(color);
   fxAdd(new THREE.Mesh(G_SPHERE, addMat(c.clone().multiplyScalar(2))), 0.35, (m, k) => {
     m.position.copy(pos); m.scale.setScalar(radius * (0.3 + 0.9 * Math.sqrt(k))); m.material.opacity = (1 - k) * 0.9;
@@ -1771,6 +1905,7 @@ class Level {
 
   // ── mesh ──
   buildMesh() {
+    if (isPong()) return this.buildPongMesh();
     const th = this.theme, tex = themeTextures(this.themeIdx);
     const floorB = new GeoBuilder(this), wallB = new GeoBuilder(this), crateB = new GeoBuilder(this), glowB = new GeoBuilder(this, false);
     const acc = new THREE.Color(th.accent).multiplyScalar(1.9), acc2 = new THREE.Color(th.accent2).multiplyScalar(1.1);
@@ -2039,16 +2174,134 @@ class Level {
       const i = this.i(x, z);
       if (this.explored[i] || (x + 0.5 - cx) ** 2 + (z + 0.5 - cz) ** 2 > rad * rad) continue;
       this.explored[i] = 1;
-      const k = this.kind[i];
-      if (k === 0) { g.fillStyle = this.room[i] >= 0 ? '#27324f' : '#1d2640'; g.fillRect(x * S, z * S, S, S); }
-      else if (k === 2) { g.fillStyle = '#5b6a90'; g.fillRect(x * S, z * S, S, S); }
-      else {
-        let edge = false;
-        for (const [dx, dz] of DIRS8) { const nx = x + dx, nz = z + dz; if (this.inb(nx, nz) && this.kind[this.i(nx, nz)] === 0) { edge = true; break; } }
-        if (edge) { g.fillStyle = k === 3 ? '#8a98c8' : '#6d7aa8'; g.fillRect(x * S, z * S, S, S); }
-      }
+      this.paintTile(x, z);
     }
   }
+  paintTile(x, z) {
+    const S = 4, g = this.mmg, i = this.i(x, z), k = this.kind[i];
+    const P = isPong() ? { room: '#262626', hall: '#161616', crate: '#8a8a8a', pillar: '#ffffff', wall: '#d6d6d6' }
+      : { room: '#27324f', hall: '#1d2640', crate: '#5b6a90', pillar: '#8a98c8', wall: '#6d7aa8' };
+    if (k === 0) { g.fillStyle = this.room[i] >= 0 ? P.room : P.hall; g.fillRect(x * S, z * S, S, S); }
+    else if (k === 2) { g.fillStyle = P.crate; g.fillRect(x * S, z * S, S, S); }
+    else {
+      let edge = false;
+      for (const [dx, dz] of DIRS8) { const nx = x + dx, nz = z + dz; if (this.inb(nx, nz) && this.kind[this.i(nx, nz)] === 0) { edge = true; break; } }
+      if (edge) { g.fillStyle = k === 3 ? P.pillar : P.wall; g.fillRect(x * S, z * S, S, S); }
+    }
+  }
+  repaintMinimap() {
+    this.mmg.clearRect(0, 0, this.W * 4, this.H * 4);
+    for (let z = 0; z < this.H; z++) for (let x = 0; x < this.W; x++) if (this.explored[this.i(x, z)]) this.paintTile(x, z);
+  }
+}
+
+// ═════════════════════════════════════════════════════════════
+//  PONG STYLE (1972): black field, white vector lines, square balls, stick figures
+// ═════════════════════════════════════════════════════════════
+const isPong = () => settings.style !== 'ps2';
+TEX.square = (() => {
+  const [c, g] = makeCanvas(8);
+  g.fillStyle = '#fff'; g.fillRect(0, 0, 8, 8);
+  const t = toTex(c, false);
+  t.magFilter = t.minFilter = THREE.NearestFilter; t.generateMipmaps = false;
+  return t;
+})();
+const keepM = (m) => { m.userData.keep = true; return m; };
+const PONG = {
+  line: keepM(new THREE.LineBasicMaterial({ color: 0xffffff, fog: true })),
+  dim: keepM(new THREE.LineBasicMaterial({ color: 0x8e8e8e, fog: true })),
+  fill: keepM(new THREE.MeshBasicMaterial({ color: 0x000000, polygonOffset: true, polygonOffsetFactor: 1, polygonOffsetUnits: 1 })),
+  white: keepM(new THREE.MeshBasicMaterial({ color: 0xffffff, side: THREE.DoubleSide })),
+  dots: keepM(new THREE.PointsMaterial({ color: 0x8a8a8a, size: 0.13, sizeAttenuation: true, fog: true })),
+  ball: keepM(new THREE.SpriteMaterial({ map: TEX.square, color: 0xffffff, depthWrite: false, fog: false })),
+};
+const stickGibs = new Gibs(220, keepM(new THREE.MeshBasicMaterial({ color: 0xffffff })), 0, new THREE.BoxGeometry(0.5, 0.07, 0.07));
+
+const edgeCache = new Map();
+function edgesOf(g) {
+  let e = edgeCache.get(g.uuid);
+  if (!e) { e = new THREE.EdgesGeometry(g, 25); edgeCache.set(g.uuid, e); }
+  return e;
+}
+// Lit meshes become black silhouettes with white edges; meshes using a material in `solid` become white highlights.
+function outlineify(root, fill = PONG.fill, edge = PONG.line, white = PONG.white, solid = new Set()) {
+  const meshes = [];
+  root.traverse((o) => { if (o.isMesh) meshes.push(o); });
+  for (const m of meshes) {
+    if (solid.has(m.material)) { m.material = white; continue; }
+    m.material = fill;
+    m.add(new THREE.LineSegments(edgesOf(m.geometry), edge));
+  }
+  return root;
+}
+
+// Vector-line version of the level: black occluders, white edges, a dot-grid floor and a dashed Pong "net" per room.
+Level.prototype.buildPongMesh = function () {
+  const T = TILE, W = this.W, H = this.H;
+  const fillB = new GeoBuilder(this, false);
+  const lines = [];
+  const L = (x1, y1, z1, x2, y2, z2) => lines.push(x1, y1, z1, x2, y2, z2);
+  const hAt = (x, z) => (this.inb(x, z) ? this.h[this.i(x, z)] : WALL_H);
+  for (let z = 0; z < H; z++) for (let x = 0; x < W; x++) {
+    const k = this.kind[this.i(x, z)];
+    if (k === 0) continue;
+    const h = this.h[this.i(x, z)], x0 = x * T, z0 = z * T, x1 = x0 + T, z1 = z0 + T;
+    let visible = false;
+    for (const [dx, dz] of DIRS4) {
+      const nh = hAt(x + dx, z + dz);
+      if (nh >= h) continue;
+      visible = true;
+      let q, a, b, ta, tb;
+      if (dx) { const fx = dx > 0 ? x1 : x0; q = [[fx, nh, z0], [fx, nh, z1], [fx, h, z1], [fx, h, z0]]; a = [fx, z0]; b = [fx, z1]; ta = [x, z - 1]; tb = [x, z + 1]; }
+      else { const fz = dz > 0 ? z1 : z0; q = [[x0, nh, fz], [x1, nh, fz], [x1, h, fz], [x0, h, fz]]; a = [x0, fz]; b = [x1, fz]; ta = [x - 1, z]; tb = [x + 1, z]; }
+      fillB.face(q, dx, 0, dz, null);
+      L(a[0], nh, a[1], b[0], nh, b[1]);
+      L(a[0], h, a[1], b[0], h, b[1]);
+      for (const [t, p] of [[ta, a], [tb, b]]) {
+        const cont = this.inb(t[0], t[1]) && hAt(t[0], t[1]) === h && hAt(t[0] + dx, t[1] + dz) === nh;
+        if (!cont) L(p[0], nh, p[1], p[0], h, p[1]);
+      }
+      if (k === 2) { L(...q[0], ...q[2]); L(...q[1], ...q[3]); }
+    }
+    if (visible) fillB.face([[x0, h, z0], [x1, h, z0], [x1, h, z1], [x0, h, z1]], 0, 1, 0, null);
+  }
+  const dots = [];
+  for (let z = 1; z < H; z++) for (let x = 1; x < W; x++) {
+    if (this.kind[this.i(x - 1, z - 1)] === 0 && this.kind[this.i(x, z - 1)] === 0 && this.kind[this.i(x - 1, z)] === 0 && this.kind[this.i(x, z)] === 0) dots.push(x * T, 0.02, z * T);
+  }
+  const net = [];
+  for (const r of this.rooms) {
+    const alongX = r.w >= r.h;
+    const n = (alongX ? r.w : r.h) * T, c = (alongX ? r.y + r.h / 2 : r.x + r.w / 2) * T, s = (alongX ? r.x : r.y) * T;
+    for (let d = 0.3; d < n - 0.3; d += 1.1) {
+      const u0 = s + d, u1 = Math.min(s + d + 0.55, s + n - 0.3);
+      const px = alongX ? (u0 + u1) / 2 : c, pz = alongX ? c : (u0 + u1) / 2;
+      if (this.heightAtPoint(px, pz) > 0) continue;
+      if (alongX) net.push(u0, 0.03, c, u1, 0.03, c); else net.push(c, 0.03, u0, c, 0.03, u1);
+    }
+  }
+  const group = new THREE.Group();
+  const add = (o) => { o.matrixAutoUpdate = false; group.add(o); return o; };
+  add(new THREE.Mesh(fillB.build(), PONG.fill));
+  const geoOf = (arr) => { const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.Float32BufferAttribute(arr, 3)); return g; };
+  add(new THREE.LineSegments(geoOf(lines), PONG.line));
+  add(new THREE.LineSegments(geoOf(net), PONG.dim));
+  add(new THREE.Points(geoOf(dots), PONG.dots));
+  this.probe = new Float32Array(W * H * 3).fill(0.6);
+  return group;
+};
+
+function pongExplosion(pos, radius) {
+  fxAdd(new THREE.LineSegments(edgesOf(G_SPHERE), new THREE.LineBasicMaterial({ color: 0xffffff, transparent: true })), 0.4, (m, k) => {
+    m.position.copy(pos); m.scale.setScalar(radius * (0.3 + 0.9 * Math.sqrt(k))); m.rotation.y = k * 1.5; m.material.opacity = 1 - k;
+  });
+  const gy = level ? level.heightAtPoint(pos.x, pos.z) : 0;
+  if (pos.y - gy < radius) {
+    fxAdd(new THREE.Mesh(G_RING, addMat(new THREE.Color(1, 1, 1), 1)), 0.45, (m, k) => {
+      m.position.set(pos.x, gy + 0.06, pos.z); m.scale.setScalar(radius * (0.4 + 1.1 * k)); m.material.opacity = 1 - k;
+    });
+  }
+  sparks(pos, 0xffffff, 36, radius * 5, 0.6, 0.26, 10);
 }
 
 // ═════════════════════════════════════════════════════════════
@@ -2249,12 +2502,21 @@ function buildWeaponModel(id) {
   }
   return { group: g, muzzle: new THREE.Vector3(...muzzle), glow };
 }
-for (const id of WEAPON_IDS) {
-  const m = buildWeaponModel(id);
-  m.group.visible = false;
-  VM.root.add(m.group);
-  VM.models[id] = m;
+function rebuildViewmodels() {
+  for (const id of WEAPON_IDS) if (VM.models[id]) VM.root.remove(VM.models[id].group);
+  for (const id of WEAPON_IDS) {
+    const m = buildWeaponModel(id);
+    if (isPong()) outlineify(m.group, PONG.fill, PONG.line, PONG.white, new Set([m.glow]));
+    m.group.visible = id === player.cur;
+    VM.root.add(m.group);
+    VM.models[id] = m;
+  }
+  VM.flash.material.map = isPong() ? TEX.square : TEX.glow;
+  VM.flash.material.needsUpdate = true;
+  VM.flash.position.copy(VM.models[player.cur].muzzle);
+  VM.light.position.copy(VM.models[player.cur].muzzle);
 }
+rebuildViewmodels();
 
 // ───────────── firing ─────────────
 const _fwd = new THREE.Vector3(), _right = new THREE.Vector3(), _up = new THREE.Vector3(), _dir = new THREE.Vector3();
@@ -2328,7 +2590,7 @@ function fireWeapon(w) {
   player.kick += w.kick;
   shake(w.shake);
   VM.flashT = 0.055;
-  VM.flash.material.color.set(w.color).multiplyScalar(1.6);
+  VM.flash.material.color.set(isPong() ? 0xffffff : w.color).multiplyScalar(isPong() ? 1 : 1.6);
   VM.flash.material.rotation = rand(Math.PI * 2);
   VM.flash.scale.setScalar(w.pellets > 1 || w.kind !== 'hit' ? 0.34 : 0.22);
   VM.light.color.set(w.color); VM.light.intensity = 6;
@@ -2928,7 +3190,7 @@ function thinkSniper(e, dt, slow) {
       if (!e.laser) { e.laser = makeBeam(0xff2040); scene.add(e.laser); }
       const tw = level.ray(from.x, from.y, from.z, e.aim.x, e.aim.y, e.aim.z, 90);
       const lock = e.state === 'lock';
-      e.laser.material.color.set(lock && Math.floor(e.t * 30) % 2 ? 0xffffff : 0xff2040).multiplyScalar(2);
+      e.laser.material.color.set(lock && Math.floor(e.t * 30) % 2 ? 0xffffff : isPong() ? 0x9a9a9a : 0xff2040).multiplyScalar(isPong() ? 1 : 2);
       e.laser.material.opacity = lock ? 1 : 0.55;
       setBeam(e.laser, from, from.clone().addScaledVector(e.aim, tw), lock ? 0.08 : 0.035);
       e.faceX = e.aim.x; e.faceZ = e.aim.z;
@@ -3147,26 +3409,57 @@ class Enemy {
     this.glowHex = T.glow; this.bc = new THREE.Vector3(); this.br = 1;
     this.dx = 0; this.dz = 0; this.dist = 99;
     this.group = new THREE.Group();
-    this.mats = {
-      body: new THREE.MeshLambertMaterial({ color: T.body, flatShading: true }),
-      dark: new THREE.MeshLambertMaterial({ color: 0x1c1e26, flatShading: true }),
-      glow: new THREE.MeshBasicMaterial({ color: new THREE.Color(T.glow).multiplyScalar(2.2) }),
-    };
-    this.glowBase = this.mats.glow.color.clone();
-    this.parts = {}; this.hits = [];
-    T.build(this);
-    this.hitW = this.hits.map((h) => ({ x: 0, y: 0, z: 0, r: h.r * this.scale, weak: !!h.weak }));
-    if (this.elite) {
-      const aura = new THREE.Sprite(new THREE.SpriteMaterial({ map: TEX.glow, color: new THREE.Color(0xffc21a).multiplyScalar(0.7), blending: THREE.AdditiveBlending, depthWrite: false, fog: false }));
-      aura.position.y = T.height * 0.5; aura.scale.setScalar(T.height * 2 + 1);
-      this.group.add(aura); this.mats.aura = aura.material;
-      const ring = mesh(G_RING, addMat(new THREE.Color(0xffc21a).multiplyScalar(1.6), 0.9), 0, 0.04, 0, this.group);
-      ring.scale.setScalar(T.r * 1.8); this.mats.ring = ring.material;
-    }
-    this.group.scale.setScalar(0.01);
+    this.mats = {};
+    this.buildVisual();
+    this.group.scale.setScalar(this.spawnT > 0 ? 0.01 : this.scale);
     scene.add(this.group);
     this.sync();
     if (!opts.instant) spawnFx(this);
+  }
+  // (Re)builds the look for the current graphics style; gameplay state is untouched.
+  buildVisual() {
+    const T = this.T;
+    for (const m of new Set(Object.values(this.mats))) m.dispose();
+    this.group.clear();
+    if (this.laser) { scene.remove(this.laser); this.laser.material.dispose(); this.laser = null; }
+    this.parts = {}; this.hits = []; this.fig = null;
+    this.pong = isPong();
+    if (this.pong) {
+      const line = new THREE.MeshBasicMaterial({ color: 0xffffff, side: THREE.DoubleSide });
+      const fill = new THREE.MeshBasicMaterial({ color: 0x000000, polygonOffset: true, polygonOffsetFactor: 1, polygonOffsetUnits: 1 });
+      this.mats = { line, fill, edge: new THREE.LineBasicMaterial({ color: 0xffffff }), body: fill, dark: fill, glow: line };
+      this.fig = pivot(this.group, 0, 0, 0);
+      if (STICK[this.type]) STICK[this.type].build(this);
+      else {
+        T.build(this);
+        if (this.parts.core) this.parts.core.material = fill;
+        outlineify(this.group, fill, this.mats.edge, line, new Set([line]));
+        bossFace(this);
+      }
+    } else {
+      this.mats = {
+        body: new THREE.MeshLambertMaterial({ color: T.body, flatShading: true }),
+        dark: new THREE.MeshLambertMaterial({ color: 0x1c1e26, flatShading: true }),
+        glow: new THREE.MeshBasicMaterial({ color: new THREE.Color(T.glow).multiplyScalar(2.2) }),
+      };
+      T.build(this);
+    }
+    this.glowBase = this.mats.glow.color.clone();
+    this.hitW = this.hits.map((h) => ({ x: 0, y: 0, z: 0, r: h.r * this.scale, weak: !!h.weak }));
+    if (this.elite) {
+      if (this.pong) {
+        const halo = new THREE.Mesh(gRing(0.34, 0.07), this.mats.line);
+        halo.position.y = T.height + 0.3; halo.scale.y = 0.35; this.fig.add(halo);
+        const ring = mesh(G_RING, this.mats.line, 0, 0.04, 0, this.group); ring.scale.setScalar(T.r * 1.8);
+      } else {
+        const aura = new THREE.Sprite(new THREE.SpriteMaterial({ map: TEX.glow, color: new THREE.Color(0xffc21a).multiplyScalar(0.7), blending: THREE.AdditiveBlending, depthWrite: false, fog: false }));
+        aura.position.y = T.height * 0.5; aura.scale.setScalar(T.height * 2 + 1);
+        this.group.add(aura); this.mats.aura = aura.material;
+        const ring = mesh(G_RING, addMat(new THREE.Color(0xffc21a).multiplyScalar(1.6), 0.9), 0, 0.04, 0, this.group);
+        ring.scale.setScalar(T.r * 1.8); this.mats.ring = ring.material;
+      }
+    }
+    if (this.spawnT <= 0) this.group.scale.setScalar(this.scale);
   }
   local(v) {
     const c = Math.cos(this.yaw), s = Math.sin(this.yaw), sc = this.scale;
@@ -3175,6 +3468,7 @@ class Enemy {
   sync() {
     this.group.position.copy(this.pos);
     this.group.rotation.y = this.yaw;
+    if (this.fig) this.fig.rotation.y = Math.atan2(camera.position.x - this.pos.x, camera.position.z - this.pos.z) - this.yaw;
     const c = Math.cos(this.yaw), s = Math.sin(this.yaw), sc = this.scale;
     this.bc.set(this.pos.x, this.pos.y + this.height * 0.5, this.pos.z);
     let br = 0;
@@ -3187,6 +3481,11 @@ class Enemy {
   }
   applyFlash() {
     const f = this.flash;
+    if (this.pong) {
+      if (this.fig) this.fig.visible = !(f > 0.1 && Math.floor(game.time * 30) % 2 === 0);
+      this.mats.fill.color.setScalar(f * 0.8);
+      return;
+    }
     this.mats.body.emissive.setScalar(f * 0.9);
     this.mats.dark.emissive.setScalar(f * 0.7);
     this.mats.glow.color.copy(this.glowBase).lerp(WHITE3, f * 0.8);
@@ -3206,15 +3505,19 @@ class Enemy {
     const c = this.bc.clone();
     const v = dir ? dir.clone().multiplyScalar(6) : new THREE.Vector3();
     const n = Math.round(this.T.gibs * this.scale);
-    for (let i = 0; i < n; i++) gibs.spawn(c, i % 3 === 0 ? 0x1c1e26 : this.T.body, v, this.scale * rand(0.8, 1.4) * (this.T.heavy ? 1.6 : 1));
-    const gc = new THREE.Color(this.T.glow).multiplyScalar(2);
-    for (let i = 0; i < Math.ceil(n / 2); i++) glowGibs.spawn(c, gc, v, 1);
+    if (this.pong) {
+      for (let i = 0; i < n; i++) stickGibs.spawn(c, 0xffffff, v, this.scale * rand(0.7, 1.3) * (this.T.heavy ? 1.8 : 1));
+    } else {
+      for (let i = 0; i < n; i++) gibs.spawn(c, i % 3 === 0 ? 0x1c1e26 : this.T.body, v, this.scale * rand(0.8, 1.4) * (this.T.heavy ? 1.6 : 1));
+      const gc = new THREE.Color(this.T.glow).multiplyScalar(2);
+      for (let i = 0; i < Math.ceil(n / 2); i++) glowGibs.spawn(c, gc, v, 1);
+    }
     sparks(c, this.T.glow, 26, 9, 0.5, 0.26, 12);
     sparks(c, 0xffffff, 8, 6, 0.25, 0.2, 0);
     smoke(c, 3, 0x2a2430, 0.9 * this.scale, 0.9, 0.4);
     addLight(c, this.T.glow, 2.6, 9, 0.3);
     sfx.edie(c);
-    for (const m of Object.values(this.mats)) m.dispose();
+    for (const m of new Set(Object.values(this.mats))) m.dispose();
     if (this.type === 'bomber') {
       if (this.selfDestruct) explode(c, 3.8, 26 * this.dmgMul, 'enemy', { hitsEnemies: true, skip: this });
       else explode(c, 3.8, 70, 'player', { skip: this, proc: false });
@@ -3270,7 +3573,7 @@ class Enemy {
     if (this.fly) this.pos.y = Math.max(0.1, this.pos.y + this.vel.y * dt);
     this.yaw = dampAngle(this.yaw, Math.atan2(-this.faceX, -this.faceZ), this.T.turn || 9, dt);
     this.sync();
-    this.T.anim(this, dt, spd);
+    (this.pong && STICK[this.type] ? STICK[this.type].anim : this.T.anim)(this, dt, spd);
   }
   vanish() {
     if (!this.alive) return;
@@ -3282,7 +3585,7 @@ class Enemy {
   remove() {
     scene.remove(this.group);
     if (this.laser) scene.remove(this.laser);
-    for (const m of Object.values(this.mats)) m.dispose();
+    for (const m of new Set(Object.values(this.mats))) m.dispose();
     this.alive = false;
   }
 }
@@ -3293,7 +3596,7 @@ function spawnEnemy(type, x, z, opts = {}) {
   return e;
 }
 function spawnFx(e) {
-  const c = new THREE.Color(e.elite ? 0xffc21a : e.type === 'boss' ? 0xff2e88 : 0xff2e88).multiplyScalar(2);
+  const c = isPong() ? new THREE.Color(1, 1, 1) : new THREE.Color(e.elite ? 0xffc21a : 0xff2e88).multiplyScalar(2);
   const s = e.type === 'boss' ? 3 : e.scale;
   const x = e.pos.x, z = e.pos.z;
   fxAdd(new THREE.Mesh(G_BEAMCYL, addMat(c, 0.8)), SPAWN_TIME, (m, k) => { m.position.set(x, 0, z); const r = (1 - k) * 1.1 * s + 0.05; m.scale.set(r, 10, r); m.material.opacity = 0.9 * (1 - k * k); });
@@ -3318,7 +3621,18 @@ const rocketGeo = CZ(0.07, 0.07, 0.42, 6), noseGeo = new THREE.ConeGeometry(0.07
 function spawnProj(o) {
   const p = Object.assign({ life: 5, r: 0.25, splash: 0, grav: 0, kind: 'bolt', size: 0.5 }, o);
   p.pos = o.pos.clone(); p.vel = o.vel.clone(); p.col = new THREE.Color(o.color); p.t = 0;
-  if (p.kind === 'rocket') {
+  if (isPong()) {
+    p.pong = true;
+    if (p.kind === 'rocket') {
+      const g = new THREE.Group();
+      g.add(new THREE.Mesh(rocketGeo, PONG.white));
+      const nose = new THREE.Mesh(noseGeo, PONG.white); nose.position.z = 0.29; g.add(nose);
+      p.mesh = g;
+    } else {
+      p.mesh = new THREE.Sprite(PONG.ball);
+      p.mesh.scale.setScalar(p.size * 1.25);
+    }
+  } else if (p.kind === 'rocket') {
     const g = new THREE.Group();
     g.add(new THREE.Mesh(rocketGeo, rocketMat));
     const nose = new THREE.Mesh(noseGeo, rocketMat); nose.position.z = 0.29; g.add(nose);
@@ -3376,10 +3690,11 @@ function updateProjectiles(dt) {
     p.mesh.position.copy(p.pos);
     if (p.kind === 'rocket') {
       p.mesh.lookAt(p.pos.x + p.vel.x, p.pos.y + p.vel.y, p.pos.z + p.vel.z);
-      smoke(p.pos.clone().addScaledVector(p.vel, -0.012), 1, 0x3a3440, 0.5, 0.7, 0.05);
+      if (p.pong) particlesAdd.spawn(p.pos.x, p.pos.y, p.pos.z, 0, 0, 0, 0.3, 0.14, _pc.set(0xffffff), 0, 0);
+      else smoke(p.pos.clone().addScaledVector(p.vel, -0.012), 1, 0x3a3440, 0.5, 0.7, 0.05);
       carryLight(p.pos, p.col, 1.4, 7);
     } else {
-      p.mesh.scale.setScalar(p.size * 2.6 * (1 + Math.sin(p.t * 30) * 0.12));
+      if (!p.pong) p.mesh.scale.setScalar(p.size * 2.6 * (1 + Math.sin(p.t * 30) * 0.12));
       if (p.kind === 'orb') { if (Math.random() < 0.5) sparks(p.pos, p.color, 1, 1.5, 0.3, 0.18, 0); carryLight(p.pos, p.col, 1.2, 6); }
       else carryLight(p.pos, p.col, 0.7, 4.5);
     }
@@ -3389,7 +3704,8 @@ function updateProjectiles(dt) {
 // ───────────── shockwaves ─────────────
 const shocks = [];
 function shockwave(pos, maxR, speed, dmg, color) {
-  const c = new THREE.Color(color).multiplyScalar(2);
+  if (isPong()) color = 0xffffff;
+  const c = new THREE.Color(color).multiplyScalar(isPong() ? 1 : 2);
   const g = new THREE.Group();
   const band = new THREE.Mesh(G_BAND, addMat(c, 0.9)), ring = new THREE.Mesh(G_RING, addMat(c, 1));
   g.add(band, ring); g.position.set(pos.x, 0.02, pos.z);
@@ -3433,6 +3749,23 @@ const PCOL = { health: 0x5aff7a, ammo: 0xffc21a, scrap: 0xffd84a, shield: 0x40d8
 const glowSprite = (color, s) => { const sp = new THREE.Sprite(keepMat(new THREE.SpriteMaterial({ map: TEX.glow, color: new THREE.Color(color).multiplyScalar(0.8), blending: THREE.AdditiveBlending, depthWrite: false, fog: false }))); sp.scale.setScalar(s); return sp; };
 function makePickupMesh(kind, weapon) {
   const g = new THREE.Group();
+  if (isPong()) {
+    const W = PONG.white;
+    if (kind === 'health') { mesh(gBox(0.5, 0.16, 0.16), W, 0, 0, 0, g); mesh(gBox(0.16, 0.5, 0.16), W, 0, 0, 0, g); }
+    else if (kind === 'ammo') { outlineify(g.add(mesh(gBox(0.4, 0.28, 0.28), PONG.fill)) && g); mesh(gBox(0.42, 0.06, 0.3), W, 0, 0.05, 0, g); }
+    else if (kind === 'scrap') { mesh(gBox(0.2, 0.2, 0.05), W, 0, 0, 0, g); }
+    else if (kind === 'shield') { outlineify(g.add(mesh(gOct(0.24), PONG.fill)) && g); }
+    else if (kind === 'weapon') {
+      const wm = buildWeaponModel(weapon);
+      outlineify(wm.group, PONG.fill, PONG.line, PONG.white, new Set([wm.glow]));
+      wm.group.scale.setScalar(2.4); wm.group.position.z = 0.4;
+      const holder = new THREE.Group(); holder.add(wm.group); g.add(holder);
+      const beam = new THREE.Mesh(G_BEAMCYL, addMat(new THREE.Color(1, 1, 1), 0.18)); beam.scale.set(0.7, 16, 0.7); beam.position.y = -1.3; g.add(beam);
+      const ring = new THREE.Mesh(G_RING, PONG.white); ring.scale.setScalar(1.3); ring.position.y = -1.25; g.add(ring);
+      g.userData.spin = holder;
+    }
+    return g;
+  }
   if (kind === 'health') {
     mesh(gBox(0.5, 0.16, 0.16), PMAT.health, 0, 0, 0, g); mesh(gBox(0.16, 0.5, 0.16), PMAT.health, 0, 0, 0, g);
     g.add(glowSprite(PCOL.health, 1.4));
@@ -3548,21 +3881,25 @@ const portalDiscMat = new THREE.ShaderMaterial({
 function buildPortal(pos) {
   const g = new THREE.Group(); g.position.copy(pos);
   portal.ringMat = new THREE.MeshBasicMaterial({ color: 0x552233 });
+  portalDiscMat.uniforms.col.value.set(isPong() ? 0xffffff : 0x2ee6ff);
   portal.ring = mesh(new THREE.TorusGeometry(1.7, 0.11, 6, 30), portal.ringMat, 0, 2.1, 0, g);
   portal.disc = mesh(new THREE.CircleGeometry(1.6, 30), portalDiscMat, 0, 2.1, 0, g);
   portal.baseMat = addMat(new THREE.Color(0x552233), 1);
   portal.base = mesh(G_RING, portal.baseMat, 0, 0.05, 0, g); portal.base.scale.setScalar(2.4);
   portal.beamMat = addMat(new THREE.Color(0x2ee6ff).multiplyScalar(1.5), 0);
   portal.beam = mesh(G_BEAMCYL, portal.beamMat, 0, 0, 0, g); portal.beam.scale.set(0.8, 22, 0.8);
-  mesh(gCyl(2.1, 2.3, 0.18, 8), rocketMat, 0, 0.0, 0, g);
+  const pad = mesh(gCyl(2.1, 2.3, 0.18, 8), rocketMat, 0, 0.0, 0, g);
+  if (isPong()) outlineify(pad);
   portal.group = g; portal.active = false; portalDiscMat.uniforms.on.value = 0;
   scene.add(g);
 }
 function setPortal(on) {
   portal.active = on;
   portalDiscMat.uniforms.on.value = on ? 1 : 0;
-  portal.ringMat.color.set(on ? 0x2ee6ff : 0x552233).multiplyScalar(on ? 1.4 : 1);
-  portal.baseMat.color.set(on ? 0x2ee6ff : 0x552233).multiplyScalar(on ? 1.8 : 1);
+  const pong = isPong();
+  portal.ringMat.color.set(on ? (pong ? 0xffffff : 0x2ee6ff) : pong ? 0x3a3a3a : 0x552233).multiplyScalar(on && !pong ? 1.4 : 1);
+  portal.baseMat.color.set(on ? (pong ? 0xffffff : 0x2ee6ff) : pong ? 0x3a3a3a : 0x552233).multiplyScalar(on && !pong ? 1.8 : 1);
+  portal.beamMat.color.set(pong ? 0xffffff : 0x2ee6ff).multiplyScalar(pong ? 1 : 1.5);
 }
 function updatePortalVisual(dt) {
   if (!portal.group) return;
@@ -3582,10 +3919,16 @@ function updatePortalVisual(dt) {
 
 // ───────────── sector barriers ─────────────
 const barrierMat = new THREE.ShaderMaterial({
-  uniforms: { map: { value: TEX.hex }, time: WU.time, col: { value: new THREE.Color(0xff2e88).multiplyScalar(1.4) } },
+  uniforms: { map: { value: TEX.hex }, time: WU.time, col: { value: new THREE.Color(0xff2e88).multiplyScalar(1.4) }, pong: { value: 0 } },
   vertexShader: 'varying vec2 vUv; varying vec3 vW; void main(){ vUv = uv; vec4 w = modelMatrix * vec4(position, 1.0); vW = w.xyz; gl_Position = projectionMatrix * viewMatrix * w; }',
-  fragmentShader: `uniform sampler2D map; uniform float time; uniform vec3 col; varying vec2 vUv; varying vec3 vW;
+  fragmentShader: `uniform sampler2D map; uniform float time; uniform vec3 col; uniform float pong; varying vec2 vUv; varying vec3 vW;
     void main(){
+      if (pong > 0.5) {
+        float net = step(0.8, fract((vW.x + vW.z) * 1.5)) * step(0.5, fract(vW.y * 2.2 - time * 1.2));
+        float rim = step(0.95, vUv.y) + step(vUv.y, 0.04);
+        gl_FragColor = vec4(vec3(max(net * 0.85, rim)), 1.0);
+        return;
+      }
       vec2 uv = vec2(vW.x + vW.z, vW.y) * 0.3;
       float hex = texture2D(map, uv + vec2(0.0, time * 0.12)).a;
       float scan = 0.5 + 0.5 * sin(vW.y * 7.0 - time * 5.0);
@@ -3606,8 +3949,14 @@ function raiseBarriers(room) {
     level.barrier[i] = 1; tiles.push([x, z]);
   }
   room.barrierTiles = tiles;
+  buildBarrierMesh(room);
+  level.updateFlow(player.pos, true);
+}
+function buildBarrierMesh(room) {
+  const inside = (x, z) => x >= room.x && x < room.x + room.w && z >= room.y && z < room.y + room.h;
   const B = new GeoBuilder(level, false), H = 3.4, T = TILE;
-  for (const [x, z] of tiles) for (const [dx, dz] of DIRS4) {
+  barrierMat.uniforms.pong.value = isPong() ? 1 : 0;
+  for (const [x, z] of room.barrierTiles) for (const [dx, dz] of DIRS4) {
     if (!inside(x + dx, z + dz)) continue;
     let q;
     if (dx) { const fx = dx > 0 ? (x + 1) * T : x * T; q = [[fx, 0, z * T], [fx, 0, (z + 1) * T], [fx, H, (z + 1) * T], [fx, H, z * T]]; }
@@ -3615,13 +3964,175 @@ function raiseBarriers(room) {
     B.face(q, -dx, 0, -dz, [0, 0, 1, 0, 1, 1, 0, 1]);
   }
   if (B.vc) { room.barrierMesh = new THREE.Mesh(B.build(), barrierMat); room.barrierMesh.renderOrder = 3; scene.add(room.barrierMesh); }
-  level.updateFlow(player.pos, true);
 }
 function dropBarriers(room) {
   for (const [x, z] of room.barrierTiles) level.barrier[level.i(x, z)] = 0;
   room.barrierTiles = [];
   if (room.barrierMesh) { scene.remove(room.barrierMesh); room.barrierMesh.geometry.dispose(); room.barrierMesh = null; }
   level.updateFlow(player.pos, true);
+}
+
+// ═════════════════════════════════════════════════════════════
+//  STICK FIGURES: flat line drawings (XY plane, feet at y=0) that always face the camera
+// ═════════════════════════════════════════════════════════════
+const G_UNIT = new THREE.PlaneGeometry(1, 1);
+const gRing = (r, th) => geo(`r${r},${th}`, () => new THREE.RingGeometry(r - th, r, 20));
+function seg(p, mat, x1, y1, x2, y2, th = 0.1) {
+  const m = new THREE.Mesh(G_UNIT, mat);
+  m.position.set((x1 + x2) / 2, (y1 + y2) / 2, 0);
+  m.rotation.z = Math.atan2(y2 - y1, x2 - x1);
+  m.scale.set(Math.hypot(x2 - x1, y2 - y1) + th * 0.6, th, 1);
+  p.add(m);
+  return m;
+}
+// a limb hanging down from (x, y); animate it through pivot.rotation.z
+function bone(p, mat, x, y, len, ang, th = 0.1) { const pv = pivot(p, x, y, 0); pv.rotation.z = ang; seg(pv, mat, 0, 0, 0, -len, th); return pv; }
+function ring2(p, mat, x, y, r, th = 0.07) { const m = new THREE.Mesh(gRing(r, th), mat); m.position.set(x, y, 0); p.add(m); return m; }
+function dot(p, mat, x, y, s) { const m = new THREE.Mesh(G_UNIT, mat); m.position.set(x, y, 0.01); m.scale.set(s, s, 1); p.add(m); return m; }
+function box2(p, mat, x0, y0, x1, y1, th = 0.1) { seg(p, mat, x0, y0, x1, y0, th); seg(p, mat, x1, y0, x1, y1, th); seg(p, mat, x1, y1, x0, y1, th); seg(p, mat, x0, y1, x0, y0, th); }
+
+const STICK = {
+  gunner: {
+    build(e) {
+      const m = e.mats.line, f = e.fig;
+      ring2(f, m, 0, 1.95, 0.2);
+      dot(f, m, -0.07, 1.98, 0.06); dot(f, m, 0.07, 1.98, 0.06);
+      seg(f, m, 0, 1.75, 0, 1.0);
+      e.parts.legs = [bone(f, m, 0, 1.0, 1.0, 0.18), bone(f, m, 0, 1.0, 1.0, -0.18)];
+      e.parts.arm = bone(f, m, 0, 1.62, 0.55, -0.45);
+      const gun = pivot(f, 0, 1.62, 0);
+      seg(gun, m, 0, 0, 0.42, -0.14); seg(gun, m, 0.36, -0.1, 0.8, -0.1, 0.13);
+      e.parts.tip = dot(gun, m, 0.84, -0.1, 0.14);
+      e.parts.gun = gun;
+      e.muzzle = [0.46, 1.42, -0.74];
+      e.hits = [{ x: 0, y: 1.42, z: 0, r: 0.52 }, { x: 0, y: 0.55, z: 0, r: 0.42 }, { x: 0, y: 1.95, z: -0.05, r: 0.24, weak: true }];
+    },
+    anim(e, dt, spd) {
+      const k = clamp(spd / 3, 0, 1);
+      e.walk = (e.walk || 0) + dt * (4 + spd * 1.6);
+      const s = Math.sin(e.walk) * 0.55 * k;
+      e.parts.legs[0].rotation.z = 0.18 + s; e.parts.legs[1].rotation.z = -0.18 - s;
+      e.parts.arm.rotation.z = -0.45 - s * 0.6;
+      e.fig.position.y = Math.abs(Math.cos(e.walk)) * 0.05 * k;
+      const aiming = e.state === 'aim' || e.state === 'burst';
+      e.parts.gun.rotation.z = aiming ? 0.25 : 0;
+      e.parts.tip.visible = !aiming || Math.floor(e.t * 20) % 2 === 0;
+    },
+  },
+  crawler: {
+    build(e) {
+      const m = e.mats.line, f = e.fig;
+      ring2(f, m, 0, 0.58, 0.3, 0.08);
+      e.parts.eye = dot(f, m, 0, 0.6, 0.16);
+      e.parts.legs = [];
+      for (const side of [-1, 1]) for (let k = 0; k < 3; k++) {
+        const hip = pivot(f, side * 0.24, 0.58 - k * 0.06, 0);
+        const kx = side * (0.26 + k * 0.13), ky = 0.26 - k * 0.07, fx = side * (0.5 + k * 0.2), fy = -(0.58 - k * 0.06);
+        seg(hip, m, 0, 0, kx, ky, 0.07); seg(hip, m, kx, ky, fx, fy, 0.07);
+        e.parts.legs.push(hip);
+      }
+      e.hits = [{ x: 0, y: 0.55, z: 0, r: 0.62 }, { x: 0, y: 0.62, z: -0.62, r: 0.2, weak: true }];
+    },
+    anim(e, dt, spd) {
+      const k = clamp(spd / 4, 0, 1);
+      e.parts.legs.forEach((p, i) => { p.rotation.z = Math.sin(e.t * 24 + (i % 3) * 2.1 + (i < 3 ? 0 : Math.PI)) * 0.18 * k; });
+      e.fig.scale.y = e.state === 'wind' ? 0.75 : 1;
+      e.parts.eye.visible = e.state !== 'wind' || Math.floor(e.t * 24) % 2 === 0;
+    },
+  },
+  bomber: {
+    build(e) {
+      const m = e.mats.line, f = e.fig;
+      ring2(f, m, 0, 0.52, 0.38, 0.08);
+      seg(f, m, 0.12, 0.86, 0.22, 1.02, 0.07); seg(f, m, 0.22, 1.02, 0.36, 1.06, 0.07);
+      e.parts.light = dot(f, m, 0.4, 1.08, 0.16);
+      seg(f, m, -0.22, 0.64, -0.07, 0.57, 0.06); seg(f, m, 0.07, 0.57, 0.22, 0.64, 0.06);
+      seg(f, m, -0.12, 0.38, 0.12, 0.38, 0.06);
+      e.parts.legs = [bone(f, m, -0.14, 0.2, 0.2, 0.2, 0.08), bone(f, m, 0.14, 0.2, 0.2, -0.2, 0.08)];
+      e.hits = [{ x: 0, y: 0.5, z: 0, r: 0.46 }, { x: 0, y: 0.95, z: 0, r: 0.16, weak: true }];
+    },
+    anim(e, dt, spd) {
+      const k = clamp(spd / 4, 0, 1), s = Math.sin(e.t * 26) * 0.55 * k;
+      e.parts.legs[0].rotation.z = 0.2 + s; e.parts.legs[1].rotation.z = -0.2 + s;
+      e.fig.position.y = Math.abs(Math.sin(e.t * 26)) * 0.06 * k;
+      e.parts.light.visible = e.blink > 0 || e.state === 'fuse';
+      e.fig.scale.setScalar(e.state === 'fuse' ? 1 + Math.sin(e.t * 50) * 0.08 : 1);
+    },
+  },
+  wisp: {
+    build(e) {
+      const m = e.mats.line, f = e.fig;
+      ring2(f, m, 0, 0.6, 0.26, 0.07);
+      e.parts.core = dot(f, m, 0, 0.6, 0.13);
+      e.parts.wings = [];
+      for (const side of [-1, 1]) {
+        const w = pivot(f, side * 0.24, 0.64, 0);
+        seg(w, m, 0, 0, side * 0.5, 0.26, 0.08); seg(w, m, side * 0.5, 0.26, side * 0.85, 0.02, 0.08);
+        e.parts.wings.push(w);
+      }
+      seg(f, m, 0, 0.34, 0, 0.12, 0.07); seg(f, m, 0, 0.12, -0.12, 0.0, 0.06); seg(f, m, 0, 0.12, 0.12, 0.0, 0.06);
+      e.hits = [{ x: 0, y: 0.6, z: 0, r: 0.3, weak: true }, { x: 0, y: 0.6, z: 0, r: 0.6 }];
+    },
+    anim(e) {
+      const flap = Math.sin(e.t * (e.state === 'aim' ? 26 : 13)) * 0.5;
+      e.parts.wings[0].rotation.z = -flap; e.parts.wings[1].rotation.z = flap;
+      e.parts.core.scale.setScalar(e.state === 'aim' ? 0.2 : 0.13);
+    },
+  },
+  sniper: {
+    build(e) {
+      const m = e.mats.line, f = e.fig;
+      ring2(f, m, 0, 2.2, 0.17);
+      ring2(f, m, 0.08, 2.22, 0.08, 0.05);
+      seg(f, m, 0, 2.03, 0, 1.3);
+      seg(f, m, 0, 1.3, -0.6, 0, 0.08); seg(f, m, 0, 1.3, 0, 0, 0.08); seg(f, m, 0, 1.3, 0.6, 0, 0.08);
+      const top = pivot(f, 0, 0, 0); e.parts.top = top;
+      seg(top, m, -0.4, 2.0, 1.25, 2.0, 0.09); seg(top, m, -0.4, 2.0, -0.5, 1.82, 0.09);
+      box2(top, m, 0.2, 2.06, 0.5, 2.16, 0.05);
+      seg(top, m, 0, 1.85, 0.35, 2.0, 0.08); seg(top, m, 0, 1.85, 0.75, 2.0, 0.08);
+      e.muzzle = [0, 2.1, -1.55];
+      e.hits = [{ x: 0, y: 1.7, z: 0, r: 0.45 }, { x: 0, y: 2.12, z: -0.05, r: 0.36 }, { x: 0, y: 2.2, z: -0.32, r: 0.17, weak: true }, { x: 0, y: 0.7, z: 0, r: 0.45 }];
+    },
+    anim(e) { e.parts.top.position.y = Math.sin(e.t * 2) * 0.03; },
+  },
+  brute: {
+    build(e) {
+      const m = e.mats.line, f = e.fig;
+      ring2(f, m, 0, 3.05, 0.26, 0.09);
+      dot(f, m, -0.09, 3.08, 0.08); dot(f, m, 0.09, 3.08, 0.08);
+      box2(f, m, -0.72, 1.5, 0.72, 2.78, 0.15);
+      ring2(f, m, 0, 2.15, 0.24, 0.07);
+      e.parts.core = dot(f, m, 0, 2.15, 0.2);
+      e.parts.legs = [bone(f, m, -0.36, 1.5, 1.5, 0.08, 0.17), bone(f, m, 0.36, 1.5, 1.5, -0.08, 0.17)];
+      e.parts.arms = [];
+      for (const side of [-1, 1]) {
+        const a = bone(f, m, side * 0.74, 2.66, 1.1, side * 0.25, 0.17);
+        dot(a, m, 0, -1.2, 0.36);
+        e.parts.arms.push(a);
+      }
+      e.hits = [{ x: 0, y: 2.2, z: 0, r: 0.95 }, { x: 0, y: 0.9, z: 0, r: 0.8 }, { x: 0, y: 2.15, z: -0.6, r: 0.33, weak: true }, { x: 0, y: 2.95, z: -0.1, r: 0.32 }];
+    },
+    anim(e, dt, spd) {
+      const k = clamp(spd / 2.5, 0, 1);
+      e.walk = (e.walk || 0) + dt * (2.5 + spd * 1.2);
+      const s = Math.sin(e.walk) * 0.4 * k;
+      e.parts.legs[0].rotation.z = 0.08 + s; e.parts.legs[1].rotation.z = -0.08 - s;
+      let raise = 0;
+      if (e.state === 'slam') raise = 2.7 * clamp(1 - e.stT / 0.75, 0, 1);
+      else if (e.state === 'throw') raise = 2.2;
+      e.parts.arms[0].rotation.z = -0.25 - raise - (e.state === 'chase' ? s * 0.5 : 0);
+      e.parts.arms[1].rotation.z = 0.25 + raise + (e.state === 'chase' ? s * 0.5 : 0);
+      e.fig.position.y = Math.abs(Math.cos(e.walk)) * 0.06 * k;
+      e.parts.core.visible = e.state !== 'slam' || Math.floor(e.t * 20) % 2 === 0;
+    },
+  },
+};
+// The Warden keeps its 3D shape in Pong mode (vector outlines, Pong paddles for plates) plus a drawn-on face.
+function bossFace(e) {
+  const m = e.mats.line, f = pivot(e.fig, 0, 0, 1.15);
+  ring2(f, m, 0, 1.5, 1.05, 0.1);
+  e.parts.eyes = [dot(f, m, -0.35, 1.72, 0.26), dot(f, m, 0.35, 1.72, 0.26)];
+  e.parts.mouth = seg(f, m, -0.45, 1.12, 0.45, 1.12, 0.1);
 }
 
 // ═════════════════════════════════════════════════════════════
@@ -3841,33 +4352,41 @@ function updateDirs(dt) {
 
 // ───────────── minimap ─────────────
 const mmc = $('#minimap'), mmx = mmc.getContext('2d');
+const MM = {
+  ps2: { hot: '#ff2e88', active: '#ffb020', pend: (a) => `rgba(255,46,136,${a})`, elite: '#ffc21a', foe: '#ff4060', exit: '#2ee6ff', locked: '#6a3048' },
+  pong: { hot: '#ffffff', active: '#ffffff', pend: (a) => `rgba(255,255,255,${a * 0.7})`, elite: '#ffffff', foe: '#ffffff', exit: '#ffffff', locked: '#555555' },
+};
 function drawMinimap() {
-  const S = 4, W = mmc.width, C = W / 2;
+  const S = 4, W = mmc.width, C = W / 2, pong = isPong(), P = MM[pong ? 'pong' : 'ps2'];
   mmx.clearRect(0, 0, W, W);
   mmx.save();
-  mmx.beginPath(); mmx.arc(C, C, C - 1, 0, Math.PI * 2); mmx.clip();
+  mmx.beginPath();
+  if (pong) mmx.rect(1, 1, W - 2, W - 2); else mmx.arc(C, C, C - 1, 0, Math.PI * 2);
+  mmx.clip();
   mmx.translate(C, C); mmx.rotate(player.yaw);
   mmx.translate((-player.pos.x / TILE) * S, (-player.pos.z / TILE) * S);
   mmx.drawImage(level.mm, 0, 0);
   const pulse = 0.55 + 0.45 * Math.sin(game.time * 5);
   for (const r of level.rooms) {
     if (r.type === 'treasure' && pickups.some((p) => p.kind === 'weapon')) {
-      mmx.fillStyle = '#ff2e88'; mmx.fillRect(r.cx * S - 3, r.cy * S - 3, 6, 6);
+      mmx.fillStyle = P.hot; mmx.fillRect(r.cx * S - 3, r.cy * S - 3, 6, 6);
     }
     if (r.cleared) continue;
-    mmx.strokeStyle = r.active ? '#ffb020' : `rgba(255,46,136,${pulse})`;
+    mmx.strokeStyle = r.active ? P.active : P.pend(pulse);
     mmx.lineWidth = 2;
+    mmx.setLineDash(pong && !r.active ? [4, 4] : []);
     mmx.strokeRect(r.x * S, r.y * S, r.w * S, r.h * S);
+    mmx.setLineDash([]);
   }
-  for (const b of level.rooms) for (const [x, z] of b.barrierTiles) { mmx.fillStyle = '#ff2e88'; mmx.fillRect(x * S, z * S, S, S); }
+  for (const b of level.rooms) for (const [x, z] of b.barrierTiles) { mmx.fillStyle = P.hot; mmx.fillRect(x * S, z * S, S, S); }
   for (const e of enemies) {
     if (!e.alive) continue;
-    mmx.fillStyle = e.type === 'boss' ? '#ff2e88' : e.elite ? '#ffc21a' : '#ff4060';
+    mmx.fillStyle = e.type === 'boss' ? P.hot : e.elite ? P.elite : P.foe;
     const s = e.type === 'boss' ? 8 : 4;
     mmx.fillRect((e.pos.x / TILE) * S - s / 2, (e.pos.z / TILE) * S - s / 2, s, s);
   }
   if (portal.group && (portal.active || level.explored[level.i(Math.floor(level.portalPos.x / TILE), Math.floor(level.portalPos.z / TILE))])) {
-    mmx.fillStyle = portal.active ? '#2ee6ff' : '#6a3048';
+    mmx.fillStyle = portal.active ? P.exit : P.locked;
     mmx.beginPath(); mmx.arc((level.portalPos.x / TILE) * S, (level.portalPos.z / TILE) * S, portal.active ? 5 + pulse * 2 : 4, 0, Math.PI * 2); mmx.fill();
   }
   mmx.restore();
@@ -4111,14 +4630,15 @@ function clearWorld() {
     levelGroup.traverse((o) => { if (o.geometry) o.geometry.dispose(); if (o.material && !o.material.userData.keep) o.material.dispose(); });
     levelGroup = null;
   }
-  particlesAdd.clear(); particlesAlpha.clear(); gibs.clear(); glowGibs.clear(); clearFx();
+  particlesAdd.clear(); particlesAlpha.clear(); gibs.clear(); glowGibs.clear(); stickGibs.clear(); clearFx();
   for (const t of tracers) { t.life = 0; t.mesh.visible = false; }
   dynLights.length = 0;
 }
 function applyTheme(th, far = 72) {
-  scene.fog.color.set(th.fog); scene.fog.near = 8; scene.fog.far = far;
+  const pong = isPong();
+  scene.fog.color.set(pong ? 0x000000 : th.fog); scene.fog.near = pong ? 4 : 8; scene.fog.far = pong ? far * 0.8 : far;
   WU.fogColor.value.set(th.fog); WU.fogNear.value = 8; WU.fogFar.value = far;
-  skyMat.uniforms.top.value.set(th.skyTop); skyMat.uniforms.horizon.value.set(th.skyHor); skyMat.uniforms.accent.value.set(th.accent2);
+  skyMat.uniforms.top.value.set(pong ? 0 : th.skyTop); skyMat.uniforms.horizon.value.set(pong ? 0 : th.skyHor); skyMat.uniforms.accent.value.set(pong ? 0 : th.accent2);
   hemi.color.set(th.fill).lerp(new THREE.Color(1, 1, 1), 0.5); hemi.groundColor.set(th.fog).multiplyScalar(2);
   hemi.intensity = 1.1; sun.intensity = 0.9; ambient.intensity = 0.35;
   barrierMat.uniforms.col.value.set(0xff2e88).multiplyScalar(1.4);
@@ -4407,7 +4927,7 @@ function openSettings(from) { game.settingsFrom = from; syncSettingsUI(); showSc
 const OPTS = [
   ['sens', 'o-sens', 'range', (v) => v.toFixed(2)], ['fov', 'o-fov', 'range', (v) => v + '°'],
   ['sfx', 'o-sfx', 'range', (v) => Math.round(v * 100) + '%'], ['music', 'o-music', 'range', (v) => Math.round(v * 100) + '%'],
-  ['res', 'o-res', 'select'], ['trails', 'o-trails', 'select'],
+  ['style', 'o-style', 'text'], ['res', 'o-res', 'select'], ['trails', 'o-trails', 'select'],
   ['sharp', 'o-sharp', 'check'], ['scan', 'o-scan', 'check'], ['shake', 'o-shake', 'check'], ['invertY', 'o-invert', 'check'],
   ['autoFire', 'o-autofire', 'check'], ['aimAssist', 'o-assist', 'check'],
 ];
@@ -4420,14 +4940,40 @@ function syncSettingsUI() {
   }
 }
 for (const [k, id, type, f] of OPTS) {
-  $('#' + id).addEventListener(type === 'check' || type === 'select' ? 'change' : 'input', (e) => {
+  $('#' + id).addEventListener(type === 'range' ? 'input' : 'change', (e) => {
     const el = e.target;
-    settings[k] = type === 'check' ? el.checked : +el.value;
+    settings[k] = type === 'check' ? el.checked : type === 'text' ? el.value : +el.value;
     if (f) $('#v-' + id.slice(2)).textContent = f(settings[k]);
     saveSettings();
     setVolumes();
     resize();
+    if (k === 'style') applyStyle();
   });
+}
+
+// Switches between the Pong and PS2 looks, rebuilding every visible object in place.
+function applyStyle() {
+  const pong = isPong();
+  document.body.classList.toggle('pong', pong);
+  particlesAdd.mat.uniforms.map.value = pong ? TEX.square : TEX.glow;
+  for (const t of tracers) { scene.remove(t.mesh); t.mesh.material.dispose(); }
+  tracers.length = 0;
+  rebuildViewmodels();
+  if (!level) return;
+  applyTheme(level.theme, game.mode === 'attract' ? 110 : 72);
+  if (levelGroup) {
+    scene.remove(levelGroup);
+    levelGroup.traverse((o) => { if (o.geometry) o.geometry.dispose(); if (o.material && !o.material.userData.keep) o.material.dispose(); });
+  }
+  levelGroup = level.buildMesh();
+  scene.add(levelGroup);
+  level.repaintMinimap();
+  for (const r of level.rooms) if (r.barrierMesh) { scene.remove(r.barrierMesh); r.barrierMesh.geometry.dispose(); r.barrierMesh = null; buildBarrierMesh(r); }
+  const was = portal.active;
+  if (portal.group) scene.remove(portal.group);
+  buildPortal(level.portalPos); setPortal(was);
+  for (const e of enemies) if (e.alive) { e.buildVisual(); e.sync(); }
+  for (const p of pickups) { scene.remove(p.mesh); p.mesh = makePickupMesh(p.kind, p.weapon); p.mesh.position.copy(p.pos); scene.add(p.mesh); }
 }
 
 function bindBtn(id, fn) {
@@ -4519,7 +5065,7 @@ function updateWeapons(dt) {
 }
 function updateEffects(dt) {
   particlesAdd.update(dt); particlesAlpha.update(dt);
-  gibs.update(dt); glowGibs.update(dt);
+  gibs.update(dt); glowGibs.update(dt); stickGibs.update(dt);
   updateTracers(dt); updateFx(dt);
   updatePortalVisual(dt);
   updateLights(dt);
@@ -4583,6 +5129,8 @@ function frame(now) {
 // ───────────── boot ─────────────
 function boot() {
   document.body.classList.toggle('coarse', touch.lastType !== 'mouse');
+  document.body.classList.toggle('pong', isPong());
+  particlesAdd.mat.uniforms.map.value = isPong() ? TEX.square : TEX.glow;
   resize();
   addEventListener('resize', resize);
   syncSettingsUI();
