@@ -10,9 +10,24 @@ There are two worlds, picked with the **World** button on the title screen:
 There are also two looks, switchable any time under **Settings → Graphics**. Each world has its own version of both looks:
 
 - **Pong (1972)**, the default. A black screen, glowing white vector lines, square "Pong ball" shots, pixel fonts, and every enemy drawn as an animated stick figure. Iron Keep gets its own stick figures: goblins with big ears, orcs with tusks, a hooded shaman and a horned warlord with a hammer.
-- **Arcade**. Full-colour low-poly 3D with bloom and motion trails.
+- **Full colour**: low-poly 3D with bloom and motion trails. The Graphics menu calls it **Cyberpunk** in Neon City and **Medieval** in Iron Keep.
   - Neon City is a WipEout Fury–style city of lit tower blocks, neon signs, hazard stripes and billboards. The menus and HUD are flat colour blocks with wide type and cut corners.
   - Iron Keep has stone walls with battlements, torches, heraldic banners and mountains. It uses gilded serif menus.
+
+## Skies
+
+Every district has its own animated sky, so looking up is never a blank void. In Pong style the same skies are drawn in white vector lines with dot stars and a vector horizon of city blocks or mountains and castles.
+
+| District | Overhead |
+| --- | --- |
+| Neon Strip | Pink smog lit from below, an advertising blimp with scrolling screens, sweeping searchlights, flying traffic and rain |
+| Holo Market | Orange smog and a hazy moon, dozens of rising paper lanterns and a giant hologram globe |
+| Corporate Spire | Clear stars and the milky way, a cratered moon, an orbital ring across the sky, a space elevator with climbing cars and a corporate hologram |
+| Undercity | The lit underside of the city above, giant support pillars, green and violet light shafts and acid rain |
+| Goblin Warrens | A sunset behind the mountains, campfire smoke and flocks of bats |
+| Iron Keep | A full moon, the milky way, a dragon circling the keep, shooting stars and lightning with thunder on the horizon |
+| Orc Warcamp | A blood moon behind burning clouds, columns of war-fire smoke, rising embers and crows |
+| Witchfire Crypt | Aurora curtains, a spiral rift overhead that spits green lightning, drifting wisps and bats |
 
 ## Play
 
@@ -98,11 +113,12 @@ Pong mode:
 - Enemies are flat stick figures that always turn to face you, with walk, flap, scuttle and slam animations. They shatter into white sticks when killed. The bosses are vector-outline 3D models with a drawn-on face.
 - The final pass converts everything to monochrome phosphor with 6-level dithering, a soft CRT glow and heavier scanlines.
 
-Arcade mode:
+Full-colour mode:
 
 - The scene renders to a low-resolution buffer (360p by default) and is upscaled with sharp or soft filtering.
 - World lighting is baked into vertex colours (Gouraud style, with 2× overbright modulation and grid-traced shadows). Up to 12 dynamic point lights for muzzle flashes, projectiles, explosions and torches are added in the shader.
 - Neon City raises the walls into towers of different heights with lit windows (an emissive texture), and adds vertical blade signs, billboards, floor decals and a skyline. Iron Keep adds battlements, flickering torches, banners and a mountain skyline.
+- The sky dome is a shader: gradient, stars, a noise-based milky way, a moon (or sun) with craters, a cloud deck projected onto a flat plane overhead so looking straight up never pinches, aurora, the rift and lightning flashes. Props such as the blimp, dragon and lanterns ride on a rig that follows the camera, so they read as infinitely far away.
 - Post-processing adds bloom, frame-blend motion trails, a little chromatic aberration, a vignette and 15-bit colour with a Bayer dither. An optional CSS scanline overlay sits on top.
 - Textures are painted at startup on small canvases. All sound effects and both soundtracks (synthwave for Neon City; plucked lute arpeggios and war drums for Iron Keep) are generated live with the Web Audio API.
 

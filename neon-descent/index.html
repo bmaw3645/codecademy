@@ -9,7 +9,7 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Michroma&family=Exo+2:wght@500;700;800;900&family=Cinzel:wght@600;700;900&family=Alegreya+Sans:wght@500;700&family=Press+Start+2P&family=VT323&display=swap">
 <style>
 /* Layout: full-bleed low-res framebuffer; HUD pinned to the four corners like a cabinet bezel; menus float over the attract-mode flyby.
-   Three skins: arcade Neon City (flat anti-grav race graphics), arcade Iron Keep (gilded fantasy), and Pong (1-bit). */
+   Three skins: full-colour Neon City (flat anti-grav race graphics), full-colour Iron Keep (gilded fantasy), and Pong (1-bit). */
 :root{
   --void:#06050c;
   --ink:#f3f1ff;
@@ -611,7 +611,7 @@ body.pong.touch #hpnum small{font-size:16px}
 <section class="screen" id="scr-title">
   <div class="title-wrap">
     <div class="title-head">
-    <div class="kicker" id="t-kicker">Arcade roguelite · Neon City</div>
+    <div class="kicker" id="t-kicker">Cyberpunk roguelite · Neon City</div>
     <h1 class="logo"><span id="logo-word">Neon</span><br>Descent</h1>
     <p class="tag" id="t-tag" data-w="tag">Drop into the megacity, clear every sector, pick an augment, go deeper.</p>
     </div>
@@ -689,7 +689,7 @@ body.pong.touch #hpnum small{font-size:16px}
     <h2 class="h1 ice">Settings</h2>
     <div class="form">
       <label for="o-style">Graphics</label>
-      <select id="o-style" class="full"><option value="pong">Pong · 1972 vector lines</option><option value="ps2">Arcade · full-colour 3D</option></select>
+      <select id="o-style" class="full"><option value="pong">Pong · 1972 vector lines</option><option value="ps2">Cyberpunk · full-colour 3D</option></select>
       <label for="o-sens">Look sensitivity</label><input type="range" id="o-sens" min="0.2" max="3" step="0.05"><output id="v-sens"></output>
       <label for="o-fov">Field of view</label><input type="range" id="o-fov" min="70" max="120" step="1"><output id="v-fov"></output>
       <label for="o-sfx">Effects volume</label><input type="range" id="o-sfx" min="0" max="1" step="0.05"><output id="v-sfx"></output>
@@ -1033,6 +1033,7 @@ const sfx = {
   warp() { noise({ dur: 1.3, vol: 0.22, ft: 'bandpass', f0: 200, f1: 3500, q: 6 }); tone({ type: 'sine', f0: 100, f1: 1400, dur: 1.2, vol: 0.16 }); },
   empty() { if (throttled('empty', 200)) return; tone({ type: 'square', f0: 300, dur: 0.03, vol: 0.05 }); },
   heartbeat() { if (!ac) return; const t = ac.currentTime; tone({ type: 'sine', f0: 80, f1: 50, dur: 0.12, vol: 0.28, t }); tone({ type: 'sine', f0: 70, f1: 45, dur: 0.14, vol: 0.22, t: t + 0.16 }); },
+  thunder(delay = 0.5, k = 1) { if (!ac) return; const t = ac.currentTime + delay; noise({ t, dur: 2.8, vol: 0.3 * k, ft: 'lowpass', f0: 380, f1: 50, a: 0.05 }); noise({ t, dur: 0.45, vol: 0.16 * k, ft: 'lowpass', f0: 2200, f1: 260, a: 0.01 }); tone({ t, type: 'sine', f0: 52, f1: 28, dur: 2.4, vol: 0.2 * k, a: 0.05 }); },
   bossroar() { noise({ dur: 1.6, vol: 0.45, ft: 'lowpass', f0: 700, f1: 70 }); tone({ type: 'sawtooth', f0: 95, f1: 38, dur: 1.6, vol: 0.28, lp: 900 }); tone({ type: 'square', f0: 190, f1: 60, dur: 1.2, vol: 0.06 }); },
   chain(pos) { const out = spatial(pos); if (!out) return; noise({ dur: 0.15, vol: 0.2, ft: 'highpass', f0: 5000, out }); tone({ type: 'sawtooth', f0: 1600, f1: 400, dur: 0.12, vol: 0.06, out }); },
   // Iron Keep arsenal
@@ -1529,22 +1530,91 @@ function updateLights(dt) {
 }
 
 // ───────────── sky dome ─────────────
+// Painted per theme by setSky(): gradient, stars, milky way, a cratered moon (or low sun), a cloud deck lit from
+// below by the city or the fires, aurora curtains, a spiral rift at the zenith and lightning flashes.
+// Clouds use a flat-plane projection so looking straight up never pinches.
 const skyMat = new THREE.ShaderMaterial({
-  uniforms: { top: { value: new THREE.Color() }, horizon: { value: new THREE.Color() }, accent: { value: new THREE.Color() }, time: WU.time,
-    stars: { value: 1 }, moon: { value: new THREE.Color() }, haze: { value: new THREE.Color() }, moonDir: { value: new THREE.Vector3(0.45, 0.42, -0.79).normalize() } },
+  uniforms: {
+    top: { value: new THREE.Color() }, horizon: { value: new THREE.Color() }, accent: { value: new THREE.Color() }, time: WU.time,
+    stars: { value: 1 }, moon: { value: new THREE.Color() }, haze: { value: new THREE.Color() }, moonDir: { value: new THREE.Vector3(0.45, 0.42, -0.79).normalize() },
+    moonR: { value: 0.9985 }, craters: { value: 0 }, glowK: { value: 1 }, milky: { value: 0 },
+    cloudA: { value: new THREE.Color() }, cloudB: { value: new THREE.Color() }, cloudCov: { value: 0 }, cloudScale: { value: 1 }, wind: { value: new THREE.Vector2(0.02, 0.005) },
+    aurora: { value: new THREE.Color() }, auroraB: { value: new THREE.Color() }, rift: { value: new THREE.Color() }, flash: { value: 0 }, ground: { value: new THREE.Color() },
+  },
   vertexShader: 'varying vec3 vDir; void main(){ vDir = position; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }',
-  fragmentShader: `uniform vec3 top; uniform vec3 horizon; uniform vec3 accent; uniform float time; uniform float stars; uniform vec3 moon; uniform vec3 haze; uniform vec3 moonDir; varying vec3 vDir;
+  fragmentShader: `uniform vec3 top; uniform vec3 horizon; uniform vec3 accent; uniform float time; uniform float stars; uniform vec3 moon; uniform vec3 haze; uniform vec3 moonDir;
+  uniform float moonR; uniform float craters; uniform float glowK; uniform float milky;
+  uniform vec3 cloudA; uniform vec3 cloudB; uniform float cloudCov; uniform float cloudScale; uniform vec2 wind;
+  uniform vec3 aurora; uniform vec3 auroraB; uniform vec3 rift; uniform float flash; uniform vec3 ground;
+  varying vec3 vDir;
   float hash(vec3 p){ p = fract(p * 0.3183099 + 0.1); p *= 17.0; return fract(p.x * p.y * p.z * (p.x + p.y + p.z)); }
+  float h2(vec2 p){ vec3 q = fract(vec3(p.xyx) * 0.1031); q += dot(q, q.yzx + 33.33); return fract((q.x + q.y) * q.z); }
+  float vn(vec2 p){ vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f);
+    return mix(mix(h2(i), h2(i + vec2(1.0, 0.0)), f.x), mix(h2(i + vec2(0.0, 1.0)), h2(i + vec2(1.0, 1.0)), f.x), f.y); }
+  float fbm(vec2 p){ float v = 0.0, a = 0.5; for (int i = 0; i < 5; i++) { v += a * vn(p); p = mat2(1.6, 1.2, -1.2, 1.6) * p + 3.1; a *= 0.5; } return v; }
   void main(){
     vec3 d = normalize(vDir); float h = clamp(d.y, 0.0, 1.0);
     vec3 c = mix(horizon, top, pow(h, 0.55));
     float band = exp(-pow((d.y - 0.32 - 0.07 * sin(atan(d.z, d.x) * 3.0 + time * 0.15)) * 8.0, 2.0));
     c += accent * band * 0.22;
+    // deep sky: stars and the milky way
     float s = hash(floor(d * 170.0));
-    c += stars * step(0.9985, s) * h * vec3(0.7, 0.72, 0.8) * (0.5 + 0.5 * sin(time * 2.5 + s * 60.0));
-    c += haze * exp(-h * 6.0);
+    vec3 deep = stars * step(0.9985, s) * h * vec3(0.75, 0.77, 0.85) * (0.5 + 0.5 * sin(time * 2.5 + s * 60.0));
+    if (milky > 0.0) {
+      vec3 n = normalize(vec3(0.35, 0.3, 0.89)), u = normalize(cross(n, vec3(0.0, 1.0, 0.0))), w = cross(n, u);
+      float b = exp(-pow(dot(d, n) * 4.2, 2.0)) * smoothstep(0.0, 0.25, d.y);
+      float m = fbm(vec2(dot(d, u) + dot(d, n) * 1.7, dot(d, w) - dot(d, n) * 1.3) * 7.0);
+      deep += milky * b * (smoothstep(0.4, 0.85, m) * 0.5 + 0.08) * vec3(0.55, 0.6, 0.85);
+      deep += milky * b * step(0.994, s) * vec3(0.6);
+    }
+    // moon (or sun): disc with maria and craters, limb darkening, halo
     float md = dot(d, moonDir);
-    c += moon * (smoothstep(0.9975, 0.9985, md) * 1.2 + pow(max(md, 0.0), 60.0) * 0.25);
+    float disc = smoothstep(moonR - 0.0006, moonR + 0.0002, md);
+    vec3 mcol = moon;
+    if (craters > 0.0 && disc > 0.0) {
+      vec3 mu = normalize(cross(moonDir, vec3(0.0, 1.0, 0.0))), mv = cross(mu, moonDir);
+      vec2 q = vec2(dot(d, mu), dot(d, mv)) / sqrt(max(1e-5, 1.0 - moonR * moonR));
+      float mar = fbm(q * 2.2 + 5.0), cr = vn(q * 7.0 + 1.3), cr2 = vn(q * 15.0 + 8.0);
+      mcol *= 1.0 - craters * (0.38 * smoothstep(0.48, 0.7, mar) + 0.22 * smoothstep(0.62, 0.8, cr) + 0.12 * smoothstep(0.7, 0.9, cr2));
+      mcol *= 0.72 + 0.28 * sqrt(max(0.0, 1.0 - dot(q, q)));
+    }
+    float mh = max(md, 0.0);
+    vec3 glow = moon * glowK * (pow(mh, 60.0) * 0.22 + pow(mh, 900.0) * 0.4);
+    // cloud deck on a plane overhead, lit from below near the horizon
+    float cl = 0.0; vec3 ccol = vec3(0.0);
+    if (cloudCov > 0.0 && d.y > 0.0) {
+      vec2 uv = d.xz / (d.y + 0.08) * cloudScale + wind * time;
+      float n = fbm(uv), n2 = fbm(uv * 2.1 + 4.0 - wind * time * 0.6);
+      cl = smoothstep(1.0 - cloudCov, 1.0 - cloudCov + 0.28, n) * smoothstep(0.0, 0.14, d.y);
+      float below = pow(1.0 - h, 2.2);
+      ccol = mix(cloudA, cloudB, clamp(below * 1.2 + (0.55 - n2) * 0.6, 0.0, 1.0));
+      ccol += moon * pow(mh, 10.0) * 0.5 * (1.1 - n2);
+      ccol *= 0.7 + 0.6 * n2;
+    }
+    // aurora curtains
+    vec3 au = vec3(0.0);
+    if (aurora.r + aurora.g + aurora.b > 0.0 && d.y > 0.0) {
+      vec2 uv = d.xz / (d.y + 0.4);
+      float f = fbm(vec2(uv.x * 0.8 + time * 0.03, uv.y * 0.8 - time * 0.01));
+      float wave = uv.y * 0.9 + sin(uv.x * 1.3 + time * 0.2) * 0.3 + f * 1.3;
+      float rib = pow(1.0 - abs(fract(wave) * 2.0 - 1.0), 3.0);
+      float rays = 0.55 + 0.45 * vn(normalize(uv + 1e-4) * 26.0 + time * 0.4);
+      au = mix(aurora, auroraB, smoothstep(0.25, 0.75, h)) * rib * rays * 0.75 * smoothstep(0.06, 0.3, h) * smoothstep(0.98, 0.6, h);
+    }
+    // witchfire rift: a slow spiral with a burning eye straight overhead
+    vec3 rc = vec3(0.0);
+    if (rift.r + rift.g + rift.b > 0.0 && d.y > 0.0) {
+      float r = length(d.xz), ang = atan(d.z, d.x);
+      float sp = sin(ang * 3.0 + log(r + 0.03) * 5.5 - time * 0.5);
+      float nn = fbm(d.xz / (d.y + 0.2) * 3.0 + time * 0.05);
+      rc = rift * (pow(max(sp, 0.0), 2.5) * smoothstep(0.8, 0.1, r) * (0.3 + 0.9 * nn) * 0.7 + exp(-r * 14.0) * 1.4);
+    }
+    c += (deep * (1.0 - disc) + mcol * disc) * (1.0 - cl * 0.93);
+    c += glow * (1.0 - cl * 0.6) + au * (1.0 - cl * 0.7) + rc * (1.0 - cl * 0.4);
+    c = mix(c, ccol, cl * 0.96);
+    c += haze * exp(-h * 6.0);
+    c += flash * (0.2 + 0.8 * cl) * (0.35 + 0.65 * h) * vec3(0.75, 0.8, 1.0);
+    c = mix(ground, c, smoothstep(-0.07, 0.01, d.y)); // below the horizon: the same murk as the fog
     gl_FragColor = vec4(c, 1.0);
   }`,
   side: THREE.BackSide, depthWrite: false, fog: false,
@@ -2583,7 +2653,7 @@ const WORLDS = {
       boss: 'Every fifth floor. Armor plates shield its core.',
     },
     txt: {
-      kicker: 'Arcade roguelite · Neon City', tag: 'Drop into the megacity, clear every sector, pick an augment, go deeper. Every fifth floor, the Warden is waiting.',
+      kicker: 'Cyberpunk roguelite · Neon City', look: 'Cyberpunk', tag: 'Drop into the megacity, clear every sector, pick an augment, go deeper. Every fifth floor, the Warden is waiting.',
       hostiles: 'HOSTILES', finalRoom: 'FINAL SECTOR', sealed: 'SECTOR SEALED', clear: 'SECTOR CLEAR', room: 'SECTOR', rooms: 'SECTORS',
       exitOpen: 'EXIT OPEN · FOLLOW THE BEAM', exitToast: 'EXIT PORTAL ONLINE · CHECK YOUR MAP', exitUnlocked: 'EXIT UNLOCKED',
       bossWarn: 'WARNING · GUARDIAN SIGNAL DETECTED', bossDown: 'WARDEN DOWN', bossTitle: 'THE WARDEN', enraged: 'OVERDRIVE', enragedSub: 'THE WARDEN IS ENRAGED',
@@ -2623,7 +2693,7 @@ const WORLDS = {
       boss: 'Every fifth floor, on his floating throne. Circling shields guard him.',
     },
     txt: {
-      kicker: 'Arcade roguelite · Iron Keep', tag: 'Storm the keep, clear every chamber, claim a boon, go deeper. Every fifth floor, the orc king waits on his throne.',
+      kicker: 'Medieval roguelite · Iron Keep', look: 'Medieval', tag: 'Storm the keep, clear every chamber, claim a boon, go deeper. Every fifth floor, the orc king waits on his throne.',
       hostiles: 'AMBUSH', finalRoom: 'THRONE APPROACH', sealed: 'THE DOORS ARE WARDED', clear: 'CHAMBER CLEAR', room: 'CHAMBER', rooms: 'CHAMBERS',
       exitOpen: 'WAYGATE OPEN · FOLLOW THE LIGHT', exitToast: 'THE WAYGATE STIRS · CHECK YOUR MAP', exitUnlocked: 'WAYGATE OPEN',
       bossWarn: 'THE WAR DRUMS FALL SILENT', bossDown: 'THE KING IS DEAD', bossTitle: 'KING GRAKK', enraged: 'BLOODRAGE', enragedSub: 'KING GRAKK IS ENRAGED',
@@ -2918,15 +2988,6 @@ function themeTextures(world, ti) {
   return themeTexCache.get(key);
 }
 
-// ── sky per world: city glow and a few stars, or a moonlit dusk ──
-function setSky(th, world, pong) {
-  const u = skyMat.uniforms;
-  u.top.value.set(pong ? 0 : th.skyTop); u.horizon.value.set(pong ? 0 : th.skyHor); u.accent.value.set(pong ? 0 : th.accent2);
-  u.stars.value = pong ? 0 : world === 'medieval' ? 1 : 0.35;
-  u.moon.value.set(pong || world !== 'medieval' ? 0 : th.moon);
-  u.haze.value.set(pong ? 0 : world === 'medieval' ? 0 : th.accent).multiplyScalar(0.35);
-}
-
 // ── building heights (Neon City): solid blocks rise into towers of varied height ──
 Level.prototype.shapeCity = function () {
   const R = mulberry32(this.floorNum * 977 + this.themeIdx * 131 + 7);
@@ -2988,6 +3049,714 @@ Level.prototype.planDecor = function () {
   }
   this.decor = d;
 };
+
+// ═════════════════════════════════════════════════════════════
+//  SKIES: every theme gets its own sky. The dome shader (skyMat) paints the backdrop;
+//  animated props sit in skyRig, which follows the camera so they read as infinitely far away.
+//  The Undercity's overhead plate and its pillars are anchored to the level instead (skyFixed).
+//  Pong style swaps the paint for white vector lines, dot stars and square lights.
+// ═════════════════════════════════════════════════════════════
+const skyRig = new THREE.Group(), skyFixed = new THREE.Group();
+scene.add(skyRig, skyFixed);
+const SKY = { key: '', ticks: [], flash: 0 };
+const V0 = new THREE.Vector3(), VUP = new THREE.Vector3(0, 1, 0);
+// az 0 looks down -Z; el is the angle above the horizon
+const skyDir = (az, el, d = 1) => new THREE.Vector3(Math.sin(az) * Math.cos(el) * d, Math.sin(el) * d, -Math.cos(az) * Math.cos(el) * d);
+// turn a flat XY drawing so it faces the rig centre
+function faceIn(o) { o.quaternion.setFromRotationMatrix(new THREE.Matrix4().lookAt(V0, o.position, VUP)); return o; }
+
+const skyAdd = (color, opacity = 1, map = null) => new THREE.MeshBasicMaterial({ color, map, transparent: true, opacity, blending: THREE.AdditiveBlending, depthWrite: false, fog: false, side: THREE.DoubleSide });
+// solid props write depth so they hide each other correctly (everything in the sky is well inside the far plane)
+const skySolid = (color) => new THREE.MeshBasicMaterial({ color, fog: false, side: THREE.DoubleSide });
+const skySprite = (map, color, additive = true, opacity = 1) => new THREE.SpriteMaterial({ map, color, transparent: true, opacity, blending: additive ? THREE.AdditiveBlending : THREE.NormalBlending, depthWrite: false, fog: false });
+const skyLine = (color, opacity = 1) => new THREE.LineBasicMaterial({ color, transparent: true, opacity, blending: THREE.AdditiveBlending, depthWrite: false, fog: false });
+// Pong sky materials: the sky sits far beyond the fog wall, so these ignore fog
+const VL = {
+  line: keepM(new THREE.LineBasicMaterial({ color: 0xffffff, fog: false })),
+  dim: keepM(new THREE.LineBasicMaterial({ color: 0x8a8a8a, fog: false })),
+  fill: keepM(new THREE.MeshBasicMaterial({ color: 0x000000, fog: false, side: THREE.DoubleSide, polygonOffset: true, polygonOffsetFactor: 1, polygonOffsetUnits: 1 })),
+  white: keepM(new THREE.MeshBasicMaterial({ color: 0xffffff, fog: false, depthWrite: false, side: THREE.DoubleSide })),
+  dots: keepM(new THREE.PointsMaterial({ color: 0xffffff, size: 2, sizeAttenuation: false, fog: false })),
+  bigDots: keepM(new THREE.PointsMaterial({ color: 0xffffff, size: 3, sizeAttenuation: false, fog: false })),
+};
+function lineGeo(arr) { const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.Float32BufferAttribute(arr, 3)); return g; }
+function circleSegs(out, r, n, cx = 0, cy = 0) {
+  for (let i = 0; i < n; i++) {
+    const a = (i / n) * Math.PI * 2, b = ((i + 1) / n) * Math.PI * 2;
+    out.push(cx + Math.cos(a) * r, cy + Math.sin(a) * r, 0, cx + Math.cos(b) * r, cy + Math.sin(b) * r, 0);
+  }
+  return out;
+}
+function polySegs(out, pts, closed = false) {
+  for (let i = 0; i < pts.length - 1 + (closed ? 1 : 0); i++) { const a = pts[i], b = pts[(i + 1) % pts.length]; out.push(a[0], a[1], a[2] || 0, b[0], b[1], b[2] || 0); }
+  return out;
+}
+
+// ── painted sprites and strips (made once, shared by every build) ──
+const SKYTEX = {};
+function skyTex(name) { if (!SKYTEX[name]) SKYTEX[name] = SKY_PAINT[name](); return SKYTEX[name]; }
+function flyer(g, up, crow) {
+  // bat or crow silhouette, wings up or down, on a 64×32 cell
+  g.fillStyle = '#fff';
+  g.beginPath(); g.ellipse(32, 17, crow ? 5 : 4, crow ? 7 : 6, 0, 0, Math.PI * 2); g.fill();
+  g.beginPath(); g.arc(32, crow ? 9 : 10, crow ? 3.5 : 3, 0, Math.PI * 2); g.fill();
+  if (crow) { g.beginPath(); g.moveTo(29, 22); g.lineTo(35, 22); g.lineTo(37, 30); g.lineTo(27, 30); g.fill(); }
+  else { g.beginPath(); g.moveTo(29, 9); g.lineTo(30, 5); g.lineTo(31.5, 8); g.moveTo(32.5, 8); g.lineTo(34, 5); g.lineTo(35, 9); g.fill(); }
+  const wing = crow
+    ? (up ? [[28, 14], [16, 5], [3, 2], [9, 9], [18, 13], [27, 18]] : [[28, 15], [17, 20], [4, 26], [12, 18], [20, 16], [27, 18]])
+    : (up ? [[28, 13], [18, 4], [5, 1], [9, 9], [13, 7], [16, 13], [21, 10], [27, 17]] : [[28, 15], [18, 18], [5, 24], [11, 19], [15, 22], [18, 17], [22, 20], [27, 18]]);
+  for (const s of [1, -1]) {
+    g.beginPath();
+    wing.forEach(([x, y], i) => { const X = 32 + (x - 32) * s; if (i) g.lineTo(X, y); else g.moveTo(X, y); });
+    g.closePath(); g.fill();
+  }
+}
+const SKY_PAINT = {
+  beam() { // searchlight: bright at the lamp, fading upward (canvas top = far end)
+    const [c, g] = makeCanvas(4, 128), gr = g.createLinearGradient(0, 0, 0, 128);
+    gr.addColorStop(0, 'rgba(255,255,255,.12)'); gr.addColorStop(0.5, 'rgba(255,255,255,.4)'); gr.addColorStop(1, 'rgba(255,255,255,1)');
+    g.fillStyle = gr; g.fillRect(0, 0, 4, 128); return toTex(c, false);
+  },
+  shaft() { // light falling from above: bright at the top
+    const [c, g] = makeCanvas(4, 128), gr = g.createLinearGradient(0, 0, 0, 128);
+    gr.addColorStop(0, 'rgba(255,255,255,1)'); gr.addColorStop(0.5, 'rgba(255,255,255,.3)'); gr.addColorStop(1, 'rgba(255,255,255,0)');
+    g.fillStyle = gr; g.fillRect(0, 0, 4, 128); return toTex(c, false);
+  },
+  lantern() {
+    const [c, g] = makeCanvas(32, 48);
+    const gr = g.createRadialGradient(16, 24, 2, 16, 24, 16);
+    gr.addColorStop(0, 'rgba(255,255,240,1)'); gr.addColorStop(0.6, 'rgba(255,255,255,.75)'); gr.addColorStop(1, 'rgba(255,255,255,.1)');
+    g.fillStyle = gr; g.beginPath(); g.ellipse(16, 24, 11, 16, 0, 0, Math.PI * 2); g.fill();
+    g.fillStyle = 'rgba(0,0,0,.6)'; g.fillRect(9, 6, 14, 3); g.fillRect(9, 39, 14, 3);
+    for (const x of [12, 16, 20]) { g.fillStyle = 'rgba(0,0,0,.18)'; g.fillRect(x, 9, 1, 30); }
+    return toTex(c, false);
+  },
+  sq() { const [c, g] = makeCanvas(16); g.strokeStyle = '#fff'; g.lineWidth = 2; g.strokeRect(2, 2, 12, 12); const t = toTex(c, false); t.magFilter = THREE.NearestFilter; return t; },
+  ring() { const [c, g] = makeCanvas(32); g.strokeStyle = '#fff'; g.lineWidth = 2.5; g.beginPath(); g.arc(16, 16, 13, 0, Math.PI * 2); g.stroke(); return toTex(c, false); },
+  batA() { const [c, g] = makeCanvas(64, 32); flyer(g, true, false); return toTex(c, false); },
+  batB() { const [c, g] = makeCanvas(64, 32); flyer(g, false, false); return toTex(c, false); },
+  crowA() { const [c, g] = makeCanvas(64, 32); flyer(g, true, true); return toTex(c, false); },
+  crowB() { const [c, g] = makeCanvas(64, 32); flyer(g, false, true); return toTex(c, false); },
+  streak() { const [c, g] = makeCanvas(64, 4), gr = g.createLinearGradient(0, 0, 64, 0); gr.addColorStop(0, 'rgba(255,255,255,0)'); gr.addColorStop(0.85, 'rgba(255,255,255,.8)'); gr.addColorStop(1, '#fff'); g.fillStyle = gr; g.fillRect(0, 0, 64, 4); return toTex(c, false); },
+  lights() { // lit segments along the orbital ring
+    const [c, g] = makeCanvas(64, 4);
+    g.fillStyle = 'rgba(255,255,255,.25)'; g.fillRect(0, 0, 64, 4);
+    g.fillStyle = '#fff'; g.fillRect(4, 0, 22, 4); g.fillRect(34, 0, 6, 4); g.fillRect(46, 0, 12, 4);
+    const t = toTex(c, false); t.wrapS = THREE.RepeatWrapping; return t;
+  },
+  ad() { // scrolling screen on the blimp
+    const [c, g] = makeCanvas(512, 64);
+    g.fillStyle = '#05050b'; g.fillRect(0, 0, 512, 64);
+    const cols = ['#ff2e88', '#2ee6ff', '#ffe600', '#9d5cff'];
+    let x = 8;
+    for (let i = 0; i < 4; i++) {
+      const col = cols[i % 4], word = SIGN_WORDS[(i * 5 + 3) % SIGN_WORDS.length];
+      g.font = '900 34px "Michroma","Arial Black",sans-serif'; g.textBaseline = 'middle';
+      g.shadowColor = col; g.shadowBlur = 10; g.fillStyle = col; g.fillText(word, x, 33);
+      x += g.measureText(word).width + 14; g.shadowBlur = 0;
+      g.fillStyle = cols[(i + 1) % 4]; g.fillRect(x, 16, 10, 32); g.fillRect(x + 14, 26, 6, 12); x += 34;
+    }
+    g.fillStyle = 'rgba(255,255,255,.12)'; for (let y = 0; y < 64; y += 3) g.fillRect(0, y, 512, 1);
+    const t = toTex(c, false); t.wrapS = THREE.RepeatWrapping; return t;
+  },
+  plate() { // underside of the upper city
+    const S = 256, [c, g] = makeCanvas(S), rng = mulberry32(99);
+    g.fillStyle = '#0d110e'; g.fillRect(0, 0, S, S);
+    for (let y = 0; y < S; y += 32) for (let x = 0; x < S; x += 32) {
+      g.fillStyle = rng() < 0.5 ? '#111612' : '#0a0d0b'; g.fillRect(x + 1, y + 1, 30, 30);
+      if (rng() < 0.25) { g.fillStyle = 'rgba(122,255,58,.5)'; g.fillRect(x + 8, y + 12, 16, 3); g.fillStyle = 'rgba(122,255,58,.15)'; g.fillRect(x + 5, y + 9, 22, 9); }
+    }
+    g.fillStyle = '#050705'; for (let k = 0; k < S; k += 32) { g.fillRect(k, 0, 1, S); g.fillRect(0, k, S, 1); }
+    for (let p = 0; p < 4; p++) { const y = Math.floor(rng() * S); g.fillStyle = '#1a211c'; g.fillRect(0, y, S, 4); g.fillStyle = 'rgba(255,255,255,.08)'; g.fillRect(0, y, S, 1); }
+    for (let i = 0; i < 90; i++) { g.fillStyle = rng() < 0.7 ? '#ffb050' : '#9dff5a'; g.fillRect(Math.floor(rng() * 8) * 32 + 2, Math.floor(rng() * 8) * 32 + 2, 2, 2); }
+    for (let r = 0; r < 3; r++) { const y = 20 + Math.floor(rng() * 200); for (let x = 4; x < S; x += 7) if (rng() < 0.6) { g.fillStyle = 'rgba(200,255,176,.55)'; g.fillRect(x, y, 3, 2); } }
+    const t = toTex(c, true); return t;
+  },
+  fade() { // radial alpha so the plate melts into the haze
+    const [c, g] = makeCanvas(128), gr = g.createRadialGradient(64, 64, 10, 64, 64, 64);
+    gr.addColorStop(0, '#fff'); gr.addColorStop(0.55, '#fff'); gr.addColorStop(1, '#000');
+    g.fillStyle = gr; g.fillRect(0, 0, 128, 128); return toTex(c, false);
+  },
+  pillar() {
+    const [c, g] = makeCanvas(64, 256), rng = mulberry32(7);
+    g.fillStyle = '#0b0f0c'; g.fillRect(0, 0, 64, 256);
+    for (let x = 0; x < 64; x += 16) { g.fillStyle = '#070907'; g.fillRect(x, 0, 2, 256); }
+    for (let i = 0; i < 70; i++) { g.fillStyle = rng() < 0.8 ? 'rgba(255,190,110,.8)' : 'rgba(157,255,90,.8)'; g.fillRect(Math.floor(rng() * 16) * 4 + 1, Math.floor(rng() * 64) * 4, 2, 2); }
+    g.fillStyle = 'rgba(122,255,58,.6)'; for (let y = 30; y < 256; y += 60) g.fillRect(0, y, 64, 2);
+    const t = toTex(c, false); t.wrapS = THREE.RepeatWrapping; return t;
+  },
+};
+
+// ── scene plumbing ──
+function skyPut(o, order, parent = skyRig) {
+  o.traverse((k) => { k.renderOrder = order; k.frustumCulled = false; });
+  parent.add(o);
+  return o;
+}
+function clearSky() {
+  for (const root of [skyRig, skyFixed]) {
+    for (const ch of [...root.children]) {
+      ch.traverse((o) => {
+        if (o.geometry) o.geometry.dispose();
+        const ms = o.material ? (Array.isArray(o.material) ? o.material : [o.material]) : [];
+        for (const m of ms) if (!m.userData.keep) m.dispose();
+      });
+      root.remove(ch);
+    }
+  }
+  SKY.ticks.length = 0;
+}
+const tick = (f) => SKY.ticks.push(f);
+// a set of sprites that share one material each; place() positions them, step() moves them
+function spriteSwarm(n, mats, scale, place, step) {
+  const items = [];
+  for (let i = 0; i < n; i++) {
+    const s = new THREE.Sprite(mats[i % mats.length]);
+    const it = { s, i, p: new THREE.Vector3(), ph: Math.random() * 10 };
+    place(it); s.position.copy(it.p); s.scale.set(scale[0] * (it.k || 1), scale[1] * (it.k || 1), 1);
+    items.push(it); skyPut(s, -8);
+  }
+  if (step) tick((dt, t) => { for (const it of items) { step(it, dt, t); it.s.position.copy(it.p); } });
+  return items;
+}
+
+// ── shared pieces ──
+function vecStars(n, rng, minEl = 0.05) {
+  const a = [];
+  for (let i = 0; i < n; i++) { const v = skyDir(rng() * Math.PI * 2, Math.asin(minEl + rng() * (1 - minEl)), 280); a.push(v.x, v.y, v.z); }
+  return skyPut(new THREE.Points(lineGeo(a), VL.dots), -9);
+}
+function vecMoon(az, el, r, rng, opts = {}) {
+  const g = new THREE.Group(); g.position.copy(skyDir(az, el, 260)); faceIn(g);
+  g.add(new THREE.Mesh(new THREE.CircleGeometry(r, 40), VL.fill));
+  const L = circleSegs([], r, 48);
+  if (opts.double) circleSegs(L, r * 1.12, 48);
+  if (opts.stripes) for (let k = 1; k <= 5; k++) { const y = -r + (k / 6) * r * 0.95, w = Math.sqrt(r * r - y * y); L.push(-w, y, 0, w, y, 0); }
+  if (opts.craters !== false) for (let k = 0; k < 6; k++) { const a = rng() * 6.28, d = rng() * r * 0.62, cr = r * (0.08 + rng() * 0.14); circleSegs(L, cr, 14, Math.cos(a) * d, Math.sin(a) * d); }
+  g.add(new THREE.LineSegments(lineGeo(L), VL.line));
+  skyPut(g, -8);
+  g.children[1].renderOrder = -7;
+  return g;
+}
+function vecCloud(w, h, rng) {
+  // union of bumps above a flat base, as a black shape with a white outline
+  const bumps = [], n = 3 + Math.floor(rng() * 3);
+  for (let k = 0; k < n; k++) { const r = h * (0.45 + rng() * 0.55); bumps.push([-w / 2 + r * 0.8 + (k / (n - 1)) * (w - r * 1.6), r]); }
+  const pts = [];
+  for (let i = 0; i <= 40; i++) {
+    const x = -w / 2 + (i / 40) * w;
+    let y = 0;
+    for (const [cx, r] of bumps) { const dx = x - cx; if (Math.abs(dx) < r) y = Math.max(y, Math.sqrt(r * r - dx * dx)); }
+    pts.push([x, y]);
+  }
+  const shape = new THREE.Shape(); shape.moveTo(-w / 2, 0);
+  for (const [x, y] of pts) shape.lineTo(x, y);
+  shape.lineTo(w / 2, 0); shape.closePath();
+  const g = new THREE.Group();
+  g.add(new THREE.Mesh(new THREE.ShapeGeometry(shape), VL.fill));
+  g.add(new THREE.LineSegments(lineGeo(polySegs([], [[-w / 2, 0], ...pts, [w / 2, 0]], true)), VL.line));
+  return g;
+}
+function vecClouds(n, rng, elMin = 0.2, elMax = 0.55) {
+  const root = new THREE.Group();
+  for (let i = 0; i < n; i++) {
+    const c = vecCloud(40 + rng() * 50, 12 + rng() * 10, rng);
+    c.position.copy(skyDir((i / n) * Math.PI * 2 + rng(), elMin + rng() * (elMax - elMin), 230)); faceIn(c);
+    root.add(c);
+  }
+  skyPut(root, -8);
+  root.traverse((o) => { if (o.isLineSegments) o.renderOrder = -7; });
+  tick((dt) => { root.rotation.y += dt * 0.006; });
+}
+// a 360° horizon silhouette: city blocks or mountains with castles (Pong only; the colour looks paint theirs)
+function vecHorizon(city, rng) {
+  const D = 235, base = -45, prof = [], lit = [];
+  const P = (az, y) => [Math.sin(az) * D, y, -Math.cos(az) * D];
+  if (city) {
+    let az = 0;
+    while (az < Math.PI * 2 - 0.02) {
+      const w = Math.min(0.025 + rng() * 0.055, Math.PI * 2 - az), y = 5 + rng() * 22 + (rng() < 0.12 ? 18 : 0);
+      prof.push([az, y], [az + w, y]);
+      if (rng() < 0.45) for (let k = 0; k < 4; k++) lit.push(P(az + rng() * w, 2 + rng() * (y - 3)));
+      if (rng() < 0.15) { const m = az + w / 2; prof.push([m - 0.002, y], [m - 0.002, y + 7], [m + 0.002, y + 7], [m + 0.002, y]); prof.sort((a, b) => a[0] - b[0]); }
+      az += w;
+    }
+  } else {
+    const castles = [0.4 + rng() * 2.4, 3.6 + rng() * 2.2], step = 0.05;
+    for (let az = 0; az <= Math.PI * 2 + 1e-6; az += step) {
+      const y0 = 3 + Math.max(0, Math.sin(az * 3 + 1) * 7 + Math.sin(az * 7) * 3 + rng() * 4);
+      prof.push([az, y0]);
+      for (const cz of castles) if (az <= cz && az + step > cz) {
+        // keep: curtain wall between towers, each tower topped with two merlons
+        let a = az + 0.004;
+        for (let t = 0; t < 4; t++) {
+          const w = 0.014, th = y0 + 7 + rng() * 9, m = w / 5;
+          prof.push([a, y0 + 4], [a, th], [a, th + 2], [a + m, th + 2], [a + m, th], [a + 2 * m, th], [a + 2 * m, th + 2], [a + 3 * m, th + 2], [a + 3 * m, th], [a + 4 * m, th], [a + 4 * m, th + 2], [a + w, th + 2], [a + w, y0 + 4]);
+          if (rng() < 0.8) lit.push(P(a + w / 2, th - 3));
+          a += w + 0.006;
+        }
+      }
+    }
+  }
+  const L = [], F = [];
+  for (let i = 0; i < prof.length - 1; i++) {
+    const a = P(prof[i][0], prof[i][1]), b = P(prof[i + 1][0], prof[i + 1][1]);
+    L.push(...a, ...b);
+    const a0 = P(prof[i][0], base), b0 = P(prof[i + 1][0], base);
+    F.push(...a0, ...b0, ...b, ...a0, ...b, ...a);
+  }
+  const g = new THREE.Group();
+  const fill = new THREE.Mesh(lineGeo(F), VL.fill); fill.renderOrder = -6; g.add(fill);
+  const lines = new THREE.LineSegments(lineGeo(L), VL.line); lines.renderOrder = -5; g.add(lines);
+  const dots = new THREE.Points(lineGeo(lit.flat()), VL.dots); dots.renderOrder = -5; g.add(dots);
+  g.traverse((o) => { o.frustumCulled = false; });
+  skyRig.add(g);
+}
+function searchlights(n, colors, pong, rng) {
+  for (let i = 0; i < n; i++) {
+    const base = new THREE.Group(); base.position.copy(skyDir(rng() * Math.PI * 2, 0, 190)); base.position.y = -25; faceIn(base);
+    const pv = new THREE.Group(); base.add(pv);
+    if (pong) pv.add(new THREE.LineSegments(lineGeo([-1, 0, 0, -8, 300, 0, 1, 0, 0, 8, 300, 0]), VL.dim));
+    else pv.add(new THREE.Mesh(new THREE.CylinderGeometry(8, 1.2, 300, 14, 1, true).translate(0, 150, 0), skyAdd(new THREE.Color(colors[i % colors.length]).multiplyScalar(0.9), 0.32, skyTex('beam'))));
+    skyPut(base, -8);
+    const sp = 0.25 + rng() * 0.25, ph = rng() * 10;
+    tick((dt, t) => { pv.rotation.z = Math.sin(t * sp + ph) * 0.55; pv.rotation.x = 0.5 + Math.sin(t * sp * 0.63 + ph) * 0.2; });
+  }
+}
+function traffic(lanes, perLane, pong, rng, yMin = 45, yMax = 110) {
+  const L = [], cars = [];
+  for (let l = 0; l < lanes; l++) {
+    const yaw = rng() * Math.PI, off = (rng() * 90) * (rng() < 0.5 ? -1 : 1);
+    L.push({ y: yMin + rng() * (yMax - yMin), dx: Math.cos(yaw), dz: Math.sin(yaw), ox: -Math.sin(yaw) * off, oz: Math.cos(yaw) * off, v: (16 + rng() * 22) * (rng() < 0.5 ? -1 : 1) });
+    for (let c = 0; c < perLane; c++) cars.push({ l: L[l], s: rng() * 600 - 300, v: (0.85 + rng() * 0.3) });
+  }
+  const n = cars.length * 2, pos = new Float32Array(n * 3), col = new Float32Array(n * 3);
+  const head = new THREE.Color(0xfff0d0), tail = new THREE.Color(0xff3030);
+  cars.forEach((c, i) => { head.toArray(col, i * 6); tail.toArray(col, i * 6 + 3); });
+  const g = new THREE.BufferGeometry();
+  g.setAttribute('position', new THREE.BufferAttribute(pos, 3)); g.setAttribute('color', new THREE.BufferAttribute(col, 3));
+  const mat = pong ? VL.dots : new THREE.PointsMaterial({ size: 3.4, map: TEX.glow, vertexColors: true, transparent: true, blending: THREE.AdditiveBlending, depthWrite: false, fog: false });
+  skyPut(new THREE.Points(g, mat), pong ? -7 : -4);
+  tick((dt) => {
+    cars.forEach((c, i) => {
+      const l = c.l; c.s += l.v * c.v * dt; if (c.s > 300) c.s -= 600; else if (c.s < -300) c.s += 600;
+      const x = l.ox + l.dx * c.s, z = l.oz + l.dz * c.s, k = Math.sign(l.v) * 1.6;
+      pos[i * 6] = x; pos[i * 6 + 1] = l.y; pos[i * 6 + 2] = z;
+      pos[i * 6 + 3] = x - l.dx * k; pos[i * 6 + 4] = l.y; pos[i * 6 + 5] = z - l.dz * k;
+    });
+    g.attributes.position.needsUpdate = true;
+  });
+}
+function rain(n, color, opacity, pong, speed = 55) {
+  const pos = new Float32Array(n * 6), drops = [];
+  for (let i = 0; i < n; i++) drops.push({ x: rand(-32, 32), y: rand(-2, 40), z: rand(-32, 32) });
+  const g = lineGeo(pos);
+  const mat = new THREE.LineBasicMaterial({ color: pong ? 0x8a8a8a : color, transparent: true, opacity: pong ? 1 : opacity, depthWrite: false, fog: !pong });
+  skyPut(new THREE.LineSegments(g, mat), 2);
+  const a = g.attributes.position.array;
+  tick((dt) => {
+    drops.forEach((d, i) => {
+      d.y -= speed * dt; d.x += 5 * dt;
+      if (d.y < -3) { d.y += 43; d.x = rand(-32, 32); d.z = rand(-32, 32); }
+      a[i * 6] = d.x; a[i * 6 + 1] = d.y; a[i * 6 + 2] = d.z; a[i * 6 + 3] = d.x + 0.12; a[i * 6 + 4] = d.y + 1.3; a[i * 6 + 5] = d.z;
+    });
+    g.attributes.position.needsUpdate = true;
+  });
+}
+// distant lightning: a jagged bolt, a sky flash and a delayed rumble
+function lightning(opts, pong) {
+  let cd = opts.first ?? rand(4, 9), life = 0, bolt = null;
+  tick((dt) => {
+    cd -= dt;
+    if (bolt) {
+      life -= dt; bolt.visible = life > 0.2 || (life > 0 && Math.random() < 0.55);
+      if (life <= 0) { bolt.traverse((o) => { if (o.geometry) o.geometry.dispose(); if (o.material && !o.material.userData.keep) o.material.dispose(); }); skyRig.remove(bolt); bolt = null; }
+    }
+    if (cd > 0) return;
+    cd = rand(opts.min, opts.max);
+    const az = rand(Math.PI * 2), from = opts.fromZenith ? skyDir(az + 2, 1.35, 230) : skyDir(az, rand(0.3, 0.5), 230), to = skyDir(az + rand(-0.12, 0.12), -0.03, 230);
+    const segs = [];
+    const split = (a, b, dep) => {
+      if (dep === 0) { segs.push(a.x, a.y, a.z, b.x, b.y, b.z); return; }
+      const m = a.clone().lerp(b, 0.5); m.x += rand(-1, 1) * a.distanceTo(b) * 0.18; m.z += rand(-1, 1) * a.distanceTo(b) * 0.18; m.y += rand(-1, 1) * a.distanceTo(b) * 0.05;
+      split(a, m, dep - 1); split(m, b, dep - 1);
+      if (dep >= 3 && Math.random() < 0.35) { const e = m.clone().add(new THREE.Vector3(rand(-1, 1), -1, rand(-1, 1)).multiplyScalar(a.distanceTo(b) * 0.35)); split(m, e, dep - 2); }
+    };
+    split(from, to, 6);
+    bolt = new THREE.Group();
+    const geo2 = lineGeo(segs);
+    if (pong) bolt.add(new THREE.LineSegments(geo2, VL.line));
+    else for (const o of [[0, 0], [0.7, 0], [0, 0.7]]) { const l = new THREE.LineSegments(geo2, skyLine(new THREE.Color(opts.color).multiplyScalar(2), 0.9)); l.position.set(o[0], 0, o[1]); bolt.add(l); }
+    skyPut(bolt, -7);
+    life = 0.35;
+    SKY.flash = pong ? 0 : opts.flash;
+    if (pong) { post.flash = Math.max(post.flash, 0.12); post.flashCol.setRGB(1, 1, 1); }
+    if (game.mode === 'run') sfx.thunder(rand(0.4, 1.6), opts.loud || 1);
+  });
+}
+function flock(n, pong, rng, crow, az0, el0, spread = 18) {
+  const A = skyTex(crow ? 'crowA' : 'batA'), B = skyTex(crow ? 'crowB' : 'batB');
+  const col = pong ? 0xffffff : 0x0a0708;
+  const mA = skySprite(A, col, false, 0.95), mB = skySprite(B, col, false, 0.95);
+  const center = { az: az0, el: el0 };
+  const birds = spriteSwarm(n, [mA], [crow ? 6.4 : 5.6, crow ? 3.2 : 2.8], (it) => {
+    it.r = 4 + rng() * spread; it.w = (0.25 + rng() * 0.35) * (rng() < 0.5 ? -1 : 1); it.h = rng() * 8; it.k = 0.7 + rng() * 0.6; it.f = crow ? 5 : 11;
+    it.p.copy(skyDir(center.az, center.el, 140));
+  }, (it, dt, t) => {
+    const c = skyDir(center.az, center.el, 140), a = t * it.w + it.ph;
+    it.p.set(c.x + Math.cos(a) * it.r, c.y + Math.sin(t * 0.7 + it.ph) * 3 + it.h, c.z + Math.sin(a) * it.r);
+    it.s.material = Math.sin(t * it.f + it.ph) > 0 ? mA : mB;
+  });
+  tick((dt, t) => { center.az += dt * 0.02; center.el = el0 + Math.sin(t * 0.05) * 0.08; });
+  return birds;
+}
+function smokeColumns(n, rng, pong, smokeCol, fireCol) {
+  for (let c = 0; c < n; c++) {
+    const az = rng() * Math.PI * 2, base = skyDir(az, 0, 200); base.y = -4;
+    if (!pong) {
+      const glow = new THREE.Sprite(skySprite(TEX.glow, new THREE.Color(fireCol).multiplyScalar(0.9)));
+      glow.position.copy(base); glow.scale.set(46, 20, 1); skyPut(glow, -8);
+      tick((dt, t) => { glow.material.opacity = 0.75 + Math.sin(t * 7 + c) * 0.12 + Math.sin(t * 13 + c * 2) * 0.08; });
+    }
+    const puffs = [];
+    for (let i = 0; i < 12; i++) {
+      const m = pong ? skySprite(skyTex('ring'), 0xffffff, false, 1) : skySprite(TEX.soft, smokeCol, false, 0.6);
+      const s = new THREE.Sprite(m); skyPut(s, -9);
+      puffs.push({ s, age: i / 12, sway: rng() * 6 });
+    }
+    tick((dt) => {
+      for (const p of puffs) {
+        p.age += dt * 0.035; if (p.age > 1) p.age -= 1;
+        const k = p.age;
+        p.s.position.set(base.x + Math.sin(k * 4 + p.sway) * 4 + k * 30, base.y + k * 150, base.z);
+        p.s.scale.setScalar(8 + k * 46);
+        p.s.material.opacity = pong ? (k < 0.85 ? 1 : 0) : 0.62 * Math.min(1, k * 6) * (1 - k);
+      }
+    });
+  }
+}
+function drifters(n, pong, rng, color, o) {
+  // lanterns, wisps or embers: sprites that rise or wander and wrap around
+  const map = o.tex ? skyTex(o.tex) : TEX.glow;
+  const mats = [pong ? skySprite(skyTex(o.pongTex || 'sq'), 0xffffff, false) : skySprite(map, new THREE.Color(color).multiplyScalar(o.bright || 1.4))];
+  if (!pong && o.color2) mats.push(skySprite(map, new THREE.Color(o.color2).multiplyScalar(o.bright || 1.4)));
+  spriteSwarm(n, mats, o.size, (it) => {
+    it.az = rng() * Math.PI * 2; it.d = o.dMin + rng() * (o.dMax - o.dMin); it.y = o.yMin + rng() * (o.yMax - o.yMin); it.k = 0.6 + rng() * 0.8;
+    it.p.set(Math.sin(it.az) * it.d, it.y, -Math.cos(it.az) * it.d);
+  }, (it, dt, t) => {
+    it.y += o.rise * dt * it.k; if (it.y > o.yMax) it.y = o.yMin;
+    it.az += (o.wander || 0) * Math.sin(t * 0.3 + it.ph) * dt;
+    const sw = Math.sin(t * 0.8 + it.ph) * (o.sway || 0);
+    it.p.set(Math.sin(it.az) * it.d + sw, it.y + Math.sin(t * 1.3 + it.ph) * (o.bob || 0), -Math.cos(it.az) * it.d);
+  });
+}
+function shootingStars(pong) {
+  const s = pong ? new THREE.LineSegments(lineGeo([0, 0, 0, 16, 0, 0]), VL.line) : new THREE.Mesh(new THREE.PlaneGeometry(16, 0.5).translate(8, 0, 0), skyAdd(0xdfe8ff, 1, skyTex('streak')));
+  const g = new THREE.Group(); g.add(s); skyPut(g, -8); g.visible = false;
+  let cd = rand(2, 6), life = 0; const v = new THREE.Vector3();
+  tick((dt) => {
+    cd -= dt;
+    if (cd <= 0 && life <= 0) {
+      cd = rand(4, 10); life = 0.9;
+      g.position.copy(skyDir(rand(Math.PI * 2), rand(0.5, 1.0), 250)); faceIn(g);
+      s.rotation.z = rand(-2.8, -2.2); v.set(Math.cos(s.rotation.z), Math.sin(s.rotation.z), 0).multiplyScalar(90).applyQuaternion(g.quaternion);
+    }
+    if (life > 0) { life -= dt; g.visible = true; g.position.addScaledVector(v, dt); if (!pong) s.material.opacity = Math.min(1, life * 2.5); if (life <= 0) g.visible = false; }
+  });
+}
+
+// ── Neon City props ──
+function blimp(pong, rng) {
+  const g = new THREE.Group();
+  const bodyM = pong ? VL.fill : skySolid(0x14131b), trim = pong ? VL.fill : skySolid(0x24232e);
+  g.add(new THREE.Mesh(new THREE.SphereGeometry(1, pong ? 10 : 22, pong ? 6 : 12).scale(34, 8.5, 8.5), bodyM));
+  g.add(new THREE.Mesh(new THREE.BoxGeometry(10, 3, 4).translate(0, -9, 0), trim));
+  for (const [ry, rz] of [[0, 0], [0, Math.PI / 2], [0, Math.PI], [0, -Math.PI / 2]]) {
+    const fin = new THREE.Mesh(new THREE.BoxGeometry(8, 0.6, 7).translate(-30, 0, 5), trim); fin.rotation.set(rz, ry, 0); g.add(fin);
+  }
+  const screen = new THREE.Mesh(new THREE.PlaneGeometry(40, 7).translate(0, 0.5, 8.6), pong ? VL.fill : new THREE.MeshBasicMaterial({ map: skyTex('ad'), color: new THREE.Color(1.5, 1.5, 1.5), fog: false, side: THREE.DoubleSide, polygonOffset: true, polygonOffsetFactor: -1, polygonOffsetUnits: -1 }));
+  g.add(screen);
+  const belly = new THREE.Mesh(new THREE.PlaneGeometry(36, 6).rotateX(Math.PI / 2).translate(0, -8.7, 0), screen.material);
+  g.add(belly);
+  if (pong) outlineify(g, VL.fill, VL.line, VL.white);
+  else {
+    screen.material.map = skyTex('ad').clone(); screen.material.map.needsUpdate = true; screen.material.map.repeat.set(0.55, 1);
+    g.add(new THREE.Mesh(new THREE.BoxGeometry(40, 0.35, 0.35).translate(0, -6.6, 6.2), skyAdd(new THREE.Color(0xff2e88).multiplyScalar(1.6))));
+  }
+  const nav = [];
+  for (const [x, c] of [[34, 0xff3030], [-33, 0x30ff60], [0, 0xffffff]]) {
+    const s = new THREE.Sprite(pong ? skySprite(TEX.square, 0xffffff, false) : skySprite(TEX.glow, new THREE.Color(c).multiplyScalar(2)));
+    s.position.set(x, x ? 0 : 9, 0); s.scale.setScalar(pong ? 1.4 : 4); g.add(s); nav.push(s);
+  }
+  skyPut(g, -9);
+  g.traverse((o) => { if (o.isSprite || o.isLineSegments) o.renderOrder = -7; });
+  const yaw = rng() * Math.PI, off = 25 + rng() * 20; let x = rng() * 500 - 250;
+  const dx = Math.cos(yaw), dz = Math.sin(yaw);
+  g.rotation.y = -yaw;
+  tick((dt, t) => {
+    x += dt * 7; if (x > 260) x -= 520;
+    g.position.set(dx * x - dz * off, 98 + Math.sin(t * 0.3) * 1.5, dz * x + dx * off);
+    nav.forEach((s, i) => { s.visible = Math.floor(t * 1.5 + i * 0.5) % 2 === 0; });
+    if (!pong) screen.material.map.offset.x = (t * 0.045) % 1;
+  });
+}
+function holoGlobe(pong, color, az, el, D, R) {
+  const g = new THREE.Group(); g.position.copy(skyDir(az, el, D));
+  const mat = pong ? VL.line : skyLine(new THREE.Color(color).multiplyScalar(1.6), 0.75);
+  const wire = new THREE.LineSegments(new THREE.WireframeGeometry(new THREE.IcosahedronGeometry(R, 1)), mat); g.add(wire);
+  const rings = [1.35, 1.6].map((k, i) => { const r = new THREE.LineSegments(lineGeo(circleSegs([], R * k, 64)), mat); r.rotation.x = 1.2 + i * 0.4; g.add(r); return r; });
+  if (!pong) {
+    const proj = new THREE.Mesh(new THREE.CylinderGeometry(R * 0.9, 1, 1, 16, 1, true).translate(0, 0.5, 0), skyAdd(new THREE.Color(color).multiplyScalar(0.6), 0.25, skyTex('shaft')));
+    const low = skyDir(az, 0, D); proj.position.set(low.x - g.position.x, -30 - g.position.y, low.z - g.position.z); proj.scale.y = g.position.y + 30 - R; g.add(proj);
+  }
+  skyPut(g, pong ? -7 : -8);
+  tick((dt, t) => {
+    wire.rotation.y += dt * 0.12; rings[0].rotation.z += dt * 0.3; rings[1].rotation.z -= dt * 0.22;
+    if (!pong) mat.opacity = 0.6 + 0.2 * Math.sin(t * 9) * Math.sin(t * 2.3) + (Math.random() < 0.03 ? -0.4 : 0);
+  });
+}
+function orbitalRing(pong) {
+  const g = new THREE.Group();
+  if (pong) {
+    const L = [];
+    for (let i = 0; i < 120; i += 2) { const a = (i / 120) * Math.PI, b = ((i + 1) / 120) * Math.PI; L.push(Math.cos(a) * 280, Math.sin(a) * 280, 0, Math.cos(b) * 280, Math.sin(b) * 280, 0); }
+    g.add(new THREE.LineSegments(lineGeo(L), VL.line));
+  } else {
+    const lights = skyTex('lights').clone(); lights.needsUpdate = true; lights.repeat.set(70, 1);
+    g.add(new THREE.Mesh(new THREE.TorusGeometry(280, 1.1, 4, 180, Math.PI), skyAdd(new THREE.Color(0xcfe6ff).multiplyScalar(1.3), 0.85, lights)));
+    g.add(new THREE.Mesh(new THREE.TorusGeometry(280, 6, 4, 90, Math.PI), skyAdd(0x6a9ad8, 0.08)));
+  }
+  g.rotation.set(0.28, 0.9, 0, 'YXZ');
+  skyPut(g, -8);
+}
+function spaceElevator(pong, az) {
+  const g = new THREE.Group(), p = skyDir(az, 0, 110); g.position.set(p.x, 0, p.z);
+  if (pong) g.add(new THREE.LineSegments(lineGeo([0, -30, 0, 0, 300, 0]), VL.line));
+  else g.add(new THREE.Mesh(new THREE.CylinderGeometry(0.45, 0.45, 330, 6, 1, true).translate(0, 135, 0), skyAdd(new THREE.Color(0xbfe0ff).multiplyScalar(0.9), 0.6)));
+  const station = new THREE.LineSegments(lineGeo(circleSegs([], 9, 24)), pong ? VL.line : skyLine(0xcfe6ff, 0.9));
+  station.position.y = 262; station.rotation.x = Math.PI / 2; g.add(station);
+  const climbers = [0, 1, 2].map((i) => {
+    const s = new THREE.Sprite(pong ? skySprite(TEX.square, 0xffffff, false) : skySprite(TEX.glow, new THREE.Color(0xffe0a0).multiplyScalar(2)));
+    s.scale.setScalar(pong ? 2 : 6); g.add(s); return { s, y: i * 100 };
+  });
+  skyPut(g, -8);
+  tick((dt) => { for (const c of climbers) { c.y += dt * 9; if (c.y > 262) c.y -= 290; c.s.position.y = c.y; } station.rotation.z += dt * 0.2; });
+}
+function corpLogo(pong, color, az, el, D, R) {
+  const L = [];
+  const tri = [0, 1, 2].map((k) => [Math.sin((k / 3) * Math.PI * 2) * R, Math.cos((k / 3) * Math.PI * 2) * R]);
+  const hex = [0, 1, 2, 3, 4, 5].map((k) => [Math.sin((k / 6) * Math.PI * 2) * R * 1.3, Math.cos((k / 6) * Math.PI * 2) * R * 1.3]);
+  polySegs(L, tri, true); polySegs(L, hex, true); polySegs(L, tri.map(([x, y]) => [-x * 0.45, -y * 0.45]), true);
+  const g = new THREE.Group(); g.position.copy(skyDir(az, el, D));
+  const mat = pong ? VL.line : skyLine(new THREE.Color(color).multiplyScalar(1.8), 0.85);
+  const logo = new THREE.LineSegments(lineGeo(L), mat); g.add(logo);
+  skyPut(g, -8); faceIn(g);
+  tick((dt, t) => { logo.rotation.y = Math.sin(t * 0.25) * 1.1; if (!pong) mat.opacity = 0.7 + 0.15 * Math.sin(t * 11) + (Math.random() < 0.02 ? -0.5 : 0); });
+}
+function undercityPlate(pong, rng) {
+  const Y = 95;
+  if (pong) {
+    const L = [];
+    for (let k = -270; k <= 270; k += 30) L.push(k, Y, -270, k, Y, 270, -270, Y, k, 270, Y, k);
+    skyPut(new THREE.LineSegments(lineGeo(L), VL.dim), -8, skyFixed);
+  } else {
+    const map = skyTex('plate').clone(); map.needsUpdate = true; map.repeat.set(9, 9);
+    const plate = new THREE.Mesh(new THREE.PlaneGeometry(760, 760), new THREE.MeshBasicMaterial({ map, alphaMap: skyTex('fade'), transparent: true, fog: false, depthWrite: false, side: THREE.DoubleSide, color: new THREE.Color(1.15, 1.15, 1.15) }));
+    plate.rotation.x = Math.PI / 2; plate.position.y = Y;
+    skyPut(plate, -9, skyFixed);
+  }
+  for (let i = 0; i < 6; i++) {
+    const a = (i / 6) * Math.PI * 2 + rng() * 0.6, d = 125 + rng() * 80;
+    const x = Math.cos(a) * d, z = Math.sin(a) * d;
+    const col = new THREE.Group(); col.position.set(x, 0, z);
+    if (pong) {
+      col.add(new THREE.Mesh(new THREE.CylinderGeometry(9, 9, 115, 8, 1, true).translate(0, Y - 57, 0), VL.fill));
+      col.add(new THREE.Mesh(new THREE.CylinderGeometry(20, 9, 14, 8, 1, true).translate(0, Y - 7, 0), VL.fill));
+      outlineify(col, VL.fill, VL.dim, VL.white);
+    } else {
+      const tex = skyTex('pillar').clone(); tex.needsUpdate = true; tex.repeat.set(3, 1);
+      col.add(new THREE.Mesh(new THREE.CylinderGeometry(9, 9, 115, 14, 1, true).translate(0, Y - 57, 0), new THREE.MeshBasicMaterial({ map: tex, fog: false })));
+      col.add(new THREE.Mesh(new THREE.CylinderGeometry(22, 9, 14, 14, 1, true).translate(0, Y - 7, 0), skySolid(0x0b0f0c)));
+      const warn = new THREE.Sprite(skySprite(TEX.glow, new THREE.Color(0xff3020).multiplyScalar(2))); warn.position.y = 60; warn.scale.setScalar(5); col.add(warn);
+      tick((dt, t) => { warn.visible = Math.floor(t * 1.2 + i * 0.37) % 2 === 0; });
+    }
+    skyPut(col, -9, skyFixed);
+  }
+  if (!pong) for (let i = 0; i < 4; i++) {
+    const a = rng() * Math.PI * 2, d = 90 + rng() * 80, r = 5 + rng() * 6;
+    const shaft = new THREE.Mesh(new THREE.CylinderGeometry(r, r * 1.8, Y + 10, 12, 1, true).translate(0, (Y - 10) / 2, 0), skyAdd(new THREE.Color(i % 2 ? 0xb050ff : 0x7aff3a).multiplyScalar(0.8), 0.16, skyTex('shaft')));
+    shaft.position.set(Math.cos(a) * d, 0, Math.sin(a) * d); skyPut(shaft, -8, skyFixed);
+    tick((dt, t) => { shaft.material.opacity = 0.14 + 0.05 * Math.sin(t * 3 + i * 2); });
+  }
+}
+
+// ── Iron Keep props ──
+function dragon(pong, rng) {
+  const g = new THREE.Group(), M = pong ? VL.fill : skySolid(0x070509);
+  const body = new THREE.Mesh(new THREE.CylinderGeometry(1.0, 1.6, 11, 7).rotateX(Math.PI / 2), M); g.add(body);
+  const neck = new THREE.Mesh(new THREE.CylinderGeometry(0.6, 1.1, 7, 6).rotateX(-(Math.PI / 2 - 0.35)).translate(0, 1.4, -8.2), M); g.add(neck);
+  const head = new THREE.Mesh(new THREE.ConeGeometry(1.1, 4, 5).rotateX(-Math.PI / 2 + 0.2).translate(0, 2.6, -13.2), M); g.add(head);
+  for (const s of [-1, 1]) { const horn = new THREE.Mesh(new THREE.ConeGeometry(0.25, 2.2, 4).rotateX(0.9).translate(s * 0.6, 3.7, -12), M); g.add(horn); }
+  const tail = new THREE.Mesh(new THREE.ConeGeometry(0.9, 16, 6).rotateX(Math.PI / 2).translate(0, 0, 13), M); g.add(tail);
+  const tailTip = new THREE.Mesh(new THREE.ConeGeometry(1.4, 2.2, 3).rotateX(Math.PI / 2).translate(0, 0, 21.5), M); g.add(tailTip);
+  const wingShape = (s) => {
+    const sh = new THREE.Shape();
+    sh.moveTo(0, -3); sh.lineTo(s * 9, 3); sh.lineTo(s * 20, 1); sh.lineTo(s * 16, -1.5); sh.lineTo(s * 17, -5); sh.lineTo(s * 12, -4); sh.lineTo(s * 11, -7.5); sh.lineTo(s * 6, -5.5); sh.lineTo(0, 4); sh.closePath();
+    const geo2 = new THREE.ShapeGeometry(sh); geo2.rotateX(-Math.PI / 2); return geo2;
+  };
+  const wings = [-1, 1].map((s) => { const p = new THREE.Group(); p.position.set(s * 1.2, 0.6, -2); p.add(new THREE.Mesh(wingShape(s), M)); g.add(p); return p; });
+  if (pong) outlineify(g, VL.fill, VL.line, VL.white);
+  else for (const s of [-1, 1]) { const e = new THREE.Sprite(skySprite(TEX.glow, new THREE.Color(0xff8a20).multiplyScalar(2.2))); e.position.set(s * 0.45, 3.1, -13.6); e.scale.setScalar(1.3); g.add(e); }
+  g.scale.setScalar(1.7);
+  skyPut(g, -9);
+  g.traverse((o) => { if (o.isLineSegments || o.isSprite) o.renderOrder = -7; });
+  let az = rng() * Math.PI * 2;
+  tick((dt, t) => {
+    az += dt * 0.045;
+    const el = 0.42 + Math.sin(t * 0.21) * 0.1;
+    g.position.copy(skyDir(az, el, 185));
+    g.rotation.set(Math.sin(t * 0.21) * 0.15, -az - Math.PI / 2, -0.35 + Math.sin(t * 0.5) * 0.1, 'YXZ');
+    const f = Math.sin(t * 2.6);
+    wings[0].rotation.z = -f * 0.7; wings[1].rotation.z = f * 0.7;
+    g.position.y += f * 2;
+  });
+}
+function vecAurora(n) {
+  const segs = 90, curtains = [];
+  for (let c = 0; c < n; c++) curtains.push({ el: 0.34 + c * 0.08, ph: c * 2.1, amp: 10 + c * 3 });
+  const pos = new Float32Array(n * segs * 12), g = lineGeo(pos);
+  skyPut(new THREE.LineSegments(g, VL.line), -7);
+  tick((dt, t) => {
+    let k = 0;
+    for (const cu of curtains) for (let i = 0; i < segs; i++) {
+      const a0 = (i / segs) * Math.PI * 2, a1 = ((i + 1) / segs) * Math.PI * 2;
+      const y = (a) => 230 * Math.sin(cu.el) + Math.sin(a * 5 + t * 0.4 + cu.ph) * cu.amp * 0.5 + Math.sin(a * 11 - t * 0.7) * 3;
+      const p0 = skyDir(a0, 0, 230 * Math.cos(cu.el)), p1 = skyDir(a1, 0, 230 * Math.cos(cu.el));
+      const y0 = y(a0), y1 = y(a1), hang = (4 + (Math.sin(a0 * 9 + t * 1.3 + cu.ph) * 0.5 + 0.5) * cu.amp) * (i % 3 === 0 ? 1 : 0);
+      pos.set([p0.x, y0, p0.z, p1.x, y1, p1.z, p0.x, y0, p0.z, p0.x, y0 - hang, p0.z], k); k += 12;
+    }
+    g.attributes.position.needsUpdate = true;
+  });
+}
+function vecRift() {
+  const L = [];
+  for (let arm = 0; arm < 3; arm++) {
+    const pts = [];
+    for (let k = 0; k < 70; k++) {
+      const r = 0.03 + k * 0.011, ang = (arm / 3) * Math.PI * 2 - Math.log(r) * 1.1;
+      pts.push(new THREE.Vector3(Math.cos(ang) * r, 1, Math.sin(ang) * r).normalize().multiplyScalar(240).toArray());
+    }
+    polySegs(L, pts);
+  }
+  const eye = circleSegs([], 7, 20);
+  const g = new THREE.Group();
+  g.add(new THREE.LineSegments(lineGeo(L), VL.line));
+  const e = new THREE.LineSegments(lineGeo(eye), VL.line); e.position.y = 240; e.rotation.x = Math.PI / 2; g.add(e);
+  skyPut(g, -7);
+  tick((dt) => { g.rotation.y -= dt * 0.25; });
+}
+function vecConstellations(n, rng) {
+  const L = [], P = [];
+  for (let c = 0; c < n; c++) {
+    const az = (c / n) * Math.PI * 2 + rng(), el = 0.35 + rng() * 0.8;
+    let a = az, e = el; const pts = [];
+    for (let k = 0; k < 5 + Math.floor(rng() * 3); k++) { pts.push(skyDir(a, e, 270).toArray()); a += (rng() - 0.3) * 0.16; e += (rng() - 0.5) * 0.14; }
+    polySegs(L, pts); for (const p of pts) P.push(...p);
+  }
+  skyPut(new THREE.LineSegments(lineGeo(L), VL.dim), -8);
+  skyPut(new THREE.Points(lineGeo(P), VL.bigDots), -7);
+}
+
+// ── per-theme dome paint and props ──
+const SKY_DOMES = {
+  cyber: [
+    { stars: 0.12, clouds: [0.56, 0x521a58, 0xff3a8a, 0.9, 0.025, 0.008] },
+    { stars: 0, moon: [0xffb070, 2.2, 1.0, 0.9984, 0.5, 1.6], clouds: [0.6, 0x4e2610, 0xff8a2a, 1.1, -0.02, 0.01] },
+    { stars: 1, milky: 0.6, moon: [0xdfe8ff, -0.9, 1.05, 0.9983, 1, 1], clouds: [0.22, 0x1a2c52, 0x3a6ab0, 0.7, 0.015, 0] },
+    { stars: 0, clouds: [0.72, 0x08100a, 0x3c7a1c, 1.3, 0.01, 0.02], haze: 0x6aff2a },
+  ],
+  medieval: [
+    { top: 0x140b26, hor: 0x7a3418, accent: 0xd8703a, stars: 0.35, moon: [0xffa050, 0.6, 0.075, 0.9945, 0, 2.4], clouds: [0.42, 0x2a1426, 0xff7a34, 0.8, 0.012, 0.004] },
+    { stars: 1, milky: 1, moon: [0xe8eeff, -0.7, 0.62, 0.9978, 1, 1.2], clouds: [0.26, 0x161e34, 0x2a3552, 0.8, 0.02, 0.006] },
+    { stars: 0.1, moon: [0xff4028, 1.9, 0.5, 0.9972, 0.9, 1.5], clouds: [0.66, 0x160606, 0xff4a12, 1.0, 0.03, -0.01] },
+    { stars: 0.7, moon: [0xb8ffc8, -2.2, 0.4, 0.9988, 0.8, 1], clouds: [0.18, 0x0a1a10, 0x2a6a2a, 0.8, 0.01, 0.01], aurora: [0x2aff7a, 0x9a3aff], rift: 0x5aff4a },
+  ],
+};
+const SKY_PROPS = {
+  cyber: [
+    (R, pong) => { // NEON STRIP: an ad blimp over pink smog, searchlights, sky traffic, rain
+      blimp(pong, R); searchlights(4, [0xff2e88, 0x2ee6ff], pong, R); traffic(5, 12, pong, R); rain(260, 0xc8b8ff, 0.3, pong);
+      if (pong) vecClouds(7, R, 0.35, 0.95);
+    },
+    (R, pong) => { // HOLO MARKET: floating lanterns, a hologram globe, teal beams, a smoggy moon
+      drifters(56, pong, R, 0xff9a3a, { tex: 'lantern', color2: 0x3ae8d0, size: [2.4, 3.4], dMin: 15, dMax: 130, yMin: 40, yMax: 190, rise: 2.2, sway: 3, bright: 1.3 });
+      holoGlobe(pong, 0x3ae8d0, 0.5, 1.12, 160, 17); searchlights(3, [0x1ae0c8, 0xff8a1a], pong, R); traffic(3, 8, pong, R);
+      if (pong) { vecMoon(2.2, 1.0, 20, R); vecClouds(8, R, 0.3, 0.9); }
+    },
+    (R, pong) => { // CORPORATE SPIRE: clear sky above the smog, orbital ring, space elevator, corporate hologram
+      orbitalRing(pong); spaceElevator(pong, 2.4); corpLogo(pong, 0x3aa0ff, -2.1, 1.05, 170, 15); traffic(7, 14, pong, R, 45, 95);
+      if (pong) { vecMoon(-0.9, 1.05, 24, R); shootingStars(true); }
+    },
+    (R, pong) => { // UNDERCITY: the underside of the city above, pillars, light shafts, acid rain
+      undercityPlate(pong, R); rain(420, 0x9dff9a, 0.34, pong, 62); traffic(3, 7, pong, R, 30, 60);
+    },
+  ],
+  medieval: [
+    (R, pong) => { // GOBLIN WARRENS: sunset, campfire smoke, bats
+      smokeColumns(3, R, pong, 0x140c0a, 0xff8a30); flock(14, pong, R, false, 1.2, 0.35); flock(10, pong, R, false, -1.8, 0.45);
+      if (pong) { vecMoon(0.6, 0.1, 34, R, { stripes: true, craters: false }); vecClouds(7, R, 0.3, 0.9); }
+    },
+    (R, pong) => { // IRON KEEP: moon and milky way, a circling dragon, shooting stars, a storm on the horizon
+      dragon(pong, R); shootingStars(pong); lightning({ color: 0xcfd8ff, min: 8, max: 18, first: 2.5, flash: 0.35, loud: 0.6 }, pong);
+      if (pong) { vecMoon(-0.7, 0.62, 28, R); vecConstellations(6, R); }
+    },
+    (R, pong) => { // ORC WARCAMP: blood moon, war-fire smoke, embers, crows
+      smokeColumns(4, R, pong, 0x100606, 0xff5a1a); flock(12, pong, R, true, 0.4, 0.4);
+      drifters(pong ? 40 : 90, pong, R, 0xff6a20, { pongTex: 'sq', size: pong ? [1.5, 1.5] : [1.8, 1.8], dMin: 40, dMax: 170, yMin: -5, yMax: 140, rise: 7, sway: 4, wander: 0.2, bright: 2 });
+      if (pong) vecMoon(1.9, 0.5, 30, R, { double: true });
+    },
+    (R, pong) => { // WITCHFIRE CRYPT: aurora, a spiral rift overhead spitting green lightning, wisps, bats
+      drifters(18, pong, R, 0x6aff5a, { pongTex: 'ring', size: pong ? [2.2, 2.2] : [7, 7], dMin: 80, dMax: 200, yMin: 15, yMax: 120, rise: 0.8, bob: 6, wander: 0.4, bright: 1.6 });
+      lightning({ color: 0x7aff5a, min: 6, max: 13, first: 2, flash: 0.45, fromZenith: true, loud: 0.7 }, pong); flock(10, pong, R, false, 2.6, 0.38);
+      if (pong) { vecAurora(3); vecRift(); vecMoon(-2.2, 0.4, 16, R); }
+    },
+  ],
+};
+function setSky(th, world, pong) {
+  const u = skyMat.uniforms, list = WORLDS[world].themes, ti = Math.max(0, list.indexOf(th)), cfg = SKY_DOMES[world][ti] || {};
+  const on = !pong;
+  u.top.value.set(on ? cfg.top ?? th.skyTop : 0); u.horizon.value.set(on ? cfg.hor ?? th.skyHor : 0); u.accent.value.set(on ? cfg.accent ?? th.accent2 : 0);
+  u.stars.value = on ? cfg.stars ?? 0.35 : 0; u.milky.value = on ? cfg.milky || 0 : 0;
+  const m = on && cfg.moon;
+  u.moon.value.set(m ? m[0] : 0);
+  if (m) { u.moonDir.value.copy(skyDir(m[1], m[2])); u.moonR.value = m[3]; u.craters.value = m[4]; u.glowK.value = m[5]; }
+  const c = on && cfg.clouds;
+  u.cloudCov.value = c ? c[0] : 0;
+  if (c) { u.cloudA.value.set(c[1]); u.cloudB.value.set(c[2]); u.cloudScale.value = c[3]; u.wind.value.set(c[4], c[5]); }
+  u.aurora.value.set(on && cfg.aurora ? cfg.aurora[0] : 0); u.auroraB.value.set(on && cfg.aurora ? cfg.aurora[1] : 0);
+  u.rift.value.set(on && cfg.rift ? cfg.rift : 0);
+  u.haze.value.set(on ? cfg.haze ?? (world === 'medieval' ? 0 : th.accent) : 0).multiplyScalar(0.35);
+  u.ground.value.set(on ? th.fog : 0);
+  const key = `${world}:${ti}:${pong ? 1 : 0}`;
+  if (key === SKY.key) return;
+  SKY.key = key; SKY.flash = 0;
+  clearSky();
+  const R = mulberry32(777 + ti * 97 + (world === 'medieval' ? 4000 : 0));
+  if (pong) {
+    vecStars((world === 'medieval' ? [70, 240, 40, 160] : [60, 20, 200, 0])[ti], R);
+    vecHorizon(world !== 'medieval', R);
+  }
+  SKY_PROPS[world][ti](R, pong, th);
+  skyFixed.position.set(level ? (level.W * TILE) / 2 : 48, 0, level ? (level.H * TILE) / 2 : 48);
+}
+function updateSky(dt) {
+  skyRig.position.copy(camera.position);
+  sky.position.copy(camera.position);
+  const t = game.time;
+  for (const f of SKY.ticks) f(dt, t);
+  SKY.flash = Math.max(0, SKY.flash - dt * 3.2);
+  skyMat.uniforms.flash.value = SKY.flash * (Math.random() < 0.85 ? 1 : 0.4);
+}
 
 // ═════════════════════════════════════════════════════════════
 //  PLAYER: weapons, augments, movement, viewmodel
@@ -6271,7 +7040,8 @@ function renderTitle() {
 function applyWorldUI() {
   document.body.classList.toggle('medieval', activeWorld === 'medieval');
   $('#logo-word').textContent = WD().logo;
-  $('#t-kicker').textContent = `${isPong() ? '1-bit edition' : 'Arcade roguelite'} · ${WD().name}`;
+  $('#t-kicker').textContent = `${isPong() ? '1-bit edition' : TX('look') + ' roguelite'} · ${WD().name}`;
+  $('#o-style option[value=ps2]').textContent = `${TX('look')} · full-colour 3D`;
   $('#t-world').textContent = WD().name;
   $('#bossbar .nm').textContent = TX('bossTitle');
   for (const el of document.querySelectorAll('[data-w]')) el.textContent = TX(el.dataset.w);
@@ -6353,7 +7123,7 @@ for (const [k, id, type, f] of OPTS) {
 function applyStyle() {
   const pong = isPong();
   document.body.classList.toggle('pong', pong);
-  $('#t-kicker').textContent = `${pong ? '1-bit edition' : 'Arcade roguelite'} · ${WD().name}`;
+  $('#t-kicker').textContent = `${pong ? '1-bit edition' : TX('look') + ' roguelite'} · ${WD().name}`;
   particlesAdd.mat.uniforms.map.value = pong ? TEX.square : TEX.glow;
   for (const t of tracers) { scene.remove(t.mesh); t.mesh.material.dispose(); }
   tracers.length = 0;
@@ -6545,6 +7315,7 @@ function frame(now) {
   post.sat = 1.18 + (player.adrenT > 0 ? 0.25 : 0);
   if (game.mode !== 'run') post.lowhp = 0;
   const showVM = game.mode === 'run' && (st === 'playing' || st === 'paused' || st === 'settings' || st === 'dying');
+  updateSky(rdt);
   renderFrame(showVM && player.alive, game.time);
   pressed.clear();
 }
@@ -6565,7 +7336,7 @@ function boot() {
   requestAnimationFrame(frame);
 }
 // console handle for tinkering: __neon.player.hp = 999
-window.__neon = { game, run, player, enemies, meta, settings, input, touch, melee: MELEE, get level() { return level; }, giveWeapon, spawnEnemy, loadFloor, setPortal };
+window.__neon = { game, run, player, enemies, meta, settings, input, touch, melee: MELEE, skyRig, get level() { return level; }, giveWeapon, spawnEnemy, loadFloor, setPortal };
 boot();
 </script>
 </body>
