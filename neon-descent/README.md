@@ -12,6 +12,16 @@ npx serve neon-descent      # or: python3 -m http.server -d neon-descent
 
 Click **Start run**. The game locks the mouse pointer. Press `Esc` to pause.
 
+| Key | Action |
+| --- | --- |
+| `W` `A` `S` `D` | Move |
+| Mouse | Aim. Left button fires |
+| `Space` | Jump onto crates and over shockwaves. Extra jumps with Grav Boots |
+| `Shift` | Dash, with brief invulnerability |
+| `1`–`5`, wheel, `Q` | Switch weapon (`Q` swaps to your last weapon) |
+| `Esc` / `P` | Pause |
+| `M` | Mute |
+
 It also plays on phones and tablets. Tap **Start run** with a finger and the game switches to touch controls. Landscape works best, but portrait is supported too.
 
 | Touch | Action |
@@ -24,16 +34,6 @@ It also plays on phones and tablets. Tap **Start run** with a finger and the gam
 | **II** | Pause |
 
 On touch, aim assist nudges your sights toward the nearest enemy, and auto-fire shoots when the crosshair turns pink. You can turn either off in Settings.
-
-| Key | Action |
-| --- | --- |
-| `W` `A` `S` `D` | Move |
-| Mouse | Aim. Left button fires |
-| `Space` | Jump onto crates and over shockwaves. Extra jumps with Grav Boots |
-| `Shift` | Dash, with brief invulnerability |
-| `1`–`5`, wheel, `Q` | Switch weapon (`Q` swaps to your last weapon) |
-| `Esc` / `P` | Pause |
-| `M` | Mute |
 
 ## The loop
 
