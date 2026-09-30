@@ -12,6 +12,19 @@ npx serve neon-descent      # or: python3 -m http.server -d neon-descent
 
 Click **Start run**. The game locks the mouse pointer. Press `Esc` to pause.
 
+It also plays on phones and tablets. Tap **Start run** with a finger and the game switches to touch controls. Landscape works best, but portrait is supported too.
+
+| Touch | Action |
+| --- | --- |
+| Left thumb, anywhere on the left half | Floating move stick |
+| Right thumb, anywhere on the right half | Aim |
+| **FIRE** | Hold to shoot. Slide your thumb on it to aim while firing |
+| **JUMP** / **DASH** | Jump and dash. The dash button fills as it recharges |
+| Weapon button | Tap to cycle weapons |
+| **II** | Pause |
+
+On touch, aim assist nudges your sights toward the nearest enemy, and auto-fire shoots when the crosshair turns pink. You can turn either off in Settings.
+
 | Key | Action |
 | --- | --- |
 | `W` `A` `S` `D` | Move |
@@ -47,6 +60,6 @@ Skitter (melee lunger), Tick (runs at you and explodes, and chain-reacts), Sentr
 - Post-processing adds bloom, frame-blend motion trails, a little chromatic aberration, a vignette and 15-bit colour with a Bayer dither. An optional CSS scanline overlay sits on top.
 - Textures are painted at startup on 64×64 canvases. All sound effects and the synthwave soundtrack are generated live with the Web Audio API.
 
-Settings (sensitivity, FOV, volume, render resolution, trails, scanlines, shake, invert Y) and Workshop progress are saved in `localStorage`.
+Settings (sensitivity, FOV, volume, render resolution, trails, scanlines, shake, invert Y, touch auto-fire and aim assist) and Workshop progress are saved in `localStorage`.
 
 For tinkering, the page exposes `window.__neon` in the dev console. For example, `__neon.giveWeapon('rail')` or `__neon.player.hp = 999`.
